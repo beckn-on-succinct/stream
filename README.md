@@ -25,19 +25,19 @@ We support following assertions
 Type|Name|Attributes| Asserts
 -|-|-|-
 TwoVariableAssertion| |message,lv,rv, <br/> comparator (as string,number,dat or boolean)
- |eq| lv == rv
- |le|  lv &lt;= rv
- |lt|  lv  &lt; rv 
- |ge| lv &gt;= rv 
- |gt|  lv &gt; rv
- |in| lv in rv(which is an array)
- |matches| lv matches rv( a regular expression)
+| |eq| | lv == rv
+| |le|  | lv &lt;= rv
+| |lt|  |lv  &lt; rv 
+| |ge| | lv &gt;= rv 
+| |gt|  |lv &gt; rv
+| |in| |lv in rv(which is an array)
+| |matches| |lv matches rv( a regular expression)
 SingleVariableAssertion | |message , v 
- |not| !v (a boolean) |
- |blank| v | if v is null or empty string
+| |not|     |!v (a boolean) |
+| |blank|   |if v is null or empty string
 CompoundAssertion|| assertions ( an array) |  
- |or| if any of the assertion is true | 
- |and| if all of the assertions are true |
+| |or|  |if any of the assertion is true | 
+| |and|  |if all of the assertions are true |
 
 
 
