@@ -1,0 +1,13 @@
+{
+    "context" : {
+        "country" :"IND",
+        "city" : "std:080" ,
+        "domain": "ONDC:RET10",
+        "core_version" :"1.2",
+        "bpp_id" : "preprod-wiggles.humbhionline.in"
+    },
+    "authorization" : {
+        "basic" : "Basic ..."
+    },
+    "sync_bap_url" : "https://certbot-preprod.humbhionline.in/bap/api/bg"
+}

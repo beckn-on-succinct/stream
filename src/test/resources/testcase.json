@@ -1,0 +1,47 @@
+{
+    "name": "flow1",
+    "steps": [
+        {
+            "name": "search",
+            "request": {
+                "timeout" : 60 ,
+                "url": "$['sync_bap_url']",
+                "api": "/search",
+                "method": "post",
+                "headers" : {
+                    "X-CallBackToBeSynchronized":"Y",
+                    "Authorization" : "$.authorization.basic",
+                    "Content-Type" : "application/json"
+                },
+                "body": {
+                    "context": {
+                        "country" : "$.context.country",
+                        "city" : "$.context.city",
+                        "domain" : "$.context.domain",
+                        "bpp_id" : "$.context.bpp_id",
+                        "core_version" : "$.context.core_version"
+                    },
+                    "message": {
+                        "intent": {
+                            "fulfillment": {
+                                "type": "Delivery"
+                            },
+                            "payment": {
+                                "@ondc/org/buyer_app_finder_fee_type": "percent",
+                                "@ondc/org/buyer_app_finder_fee_amount": "3"
+                            }
+                        }
+                    }
+                }
+            },
+            "assertion": {
+                "gt": {
+                    "message" : "Asserting that there are atleast 5 items" ,
+                    "lv" : "$['search']['response']['data'][0]['message']['catalog']['bpp/providers'][0]['items'].length()",
+                    "rv": 5,
+                    "comparator": "number"
+                }
+            }
+        }
+    ]
+}
