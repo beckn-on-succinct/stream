@@ -1,52 +1,56 @@
 package in.humbhionline.certbot;
 
+import in.humbhionline.certbot.Assertions.And;
+import in.humbhionline.certbot.Assertions.Or;
 import in.succinct.json.JSONObjectWrapper;
 import org.json.simple.JSONObject;
 
-import java.util.Set;
-
 @SuppressWarnings("ALL")
-public class Assertion extends JSONObjectWrapper{
+public class Assertion extends JSONObjectWrapper implements Condition {
 
-
-    public Assertion() {
+    public Assertion(){
+        super();
     }
-
-    public Assertion(JSONObject value) {
-        super(value);
+    public Assertion(JSONObject o){
+        super(o);
     }
 
     public Assertion(String payload) {
         super(payload);
     }
 
-    public Assertable getAssertable(){
-        Set keySet = getInner().keySet();
-        if (keySet.size() != 1 ){
-            throw new RuntimeException("Unknown type of assertion!");
+    public And getAnd(){
+        return get(And.class, "and");
+    }
+
+    public Or getOr(){
+        return get(Or.class, "or");
+    }
+
+    public Script getScript(){
+        return get(Script.class, "script");
+    }
+
+    public Condition getCondition(){
+        Condition condition = null;
+
+        for (Condition c : new Condition[]{getAnd(), getOr(), getScript()}){
+            if (condition == null){
+                condition = c;
+            }else if (c != null){
+                throw new RuntimeException("Multiple conditions to assert!");
+            }
         }
-        String type = (String)keySet.iterator().next();
-
-        return get(Assertable.getClass(type), type);
-    }
-    public void setAssertable(Assertable assertable){
-        set(assertable.getType(assertable),assertable);
+        return condition;
     }
 
-    public boolean eval(){
-        return getAssertable().eval();
+    @Override
+    public boolean eval(TestCase testCase){
+        return getCondition().eval(testCase);
     }
 
-    public void assertTrue(){
-        Assertable assertable = getAssertable();
-
-        try {
-            assertable.assertTrue();
-            Logger.log(String.format("\t\t Asserted %s %s",Assertable.getType(assertable),assertable.toString()));
-        }catch (Exception ex){
-            Logger.log(String.format("\t\t Could not assert %s %s",Assertable.getType(assertable), assertable.toString()));
-            throw ex;
-        }
+    public String toString(){
+        return String.format(getInner().toString());
     }
 
 }

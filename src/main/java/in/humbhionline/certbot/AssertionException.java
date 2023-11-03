@@ -5,4 +5,7 @@ public class AssertionException extends RuntimeException{
         super(message);
     }
 
+    public AssertionException(Exception ex) {
+        super(ex);
+    }
 }

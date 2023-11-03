@@ -1,9 +1,7 @@
 package in.humbhionline.certbot;
 
-import in.succinct.json.JSONAwareWrapper;
 import in.succinct.json.JSONObjectWrapper;
 import org.json.simple.JSONArray;
-import org.json.simple.JSONAware;
 
 import java.util.List;
 import java.util.Map;

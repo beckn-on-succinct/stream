@@ -1,12 +1,11 @@
 package in.humbhionline.certbot;
 
-import com.jayway.jsonpath.JsonPath;
 import com.venky.core.io.ByteArrayInputStream;
 import com.venky.core.string.StringUtil;
 import com.venky.core.util.ObjectUtil;
 import in.humbhionline.certbot.Request.HttpMethod;
 import in.succinct.json.JSONObjectWrapper;
-import org.json.simple.JSONArray;
+import in.succinct.json.ObjectWrappers;
 import org.json.simple.JSONAware;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -22,8 +21,6 @@ import java.net.http.HttpRequest.Builder;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.time.Duration;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
 public class Step extends JSONObjectWrapper {
@@ -100,64 +97,53 @@ public class Step extends JSONObjectWrapper {
 
             testCase.getVariables().set(getName(),getExportedVariables());
             finalizeAttribute("assertion",testCase);
-            getAssertion().assertTrue();
+            getAssertion().assertTrue(testCase);
+            Logger.getInstance().logPayloads(testCase,this);
+
         }catch (Exception ex){
             throw  new RuntimeException(ex);
         }
 
 
     }
-    public void finalizeAttribute(String attributeName, TestCase testCase){
-        Variables variables = testCase.getVariables();
-        JSONObject o = get(attributeName);
-        resolve(variables, o);
-        set(attributeName, o);
+    public Logs getLogs(){
+        return get(Logs.class, "logs");
+    }
+    public void setLogs(Logs logs){
+        set("logs",logs);
     }
 
+    public static class Logs extends ObjectWrappers<Log> {
 
-
-    @SuppressWarnings("ALL")
-    private void resolve(Variables variables, JSONAware jsonAware) {
-        if (jsonAware instanceof JSONObject jsonObject) {
-            Set<Object> keys = new HashSet<Object>(jsonObject.keySet());
-            for (Object key : keys) {
-                String k  = (String)key;
-                Object v  = jsonObject.get(k);
-                boolean isKeyTransformationRequired =  k.charAt(0) == '$' ;
-                boolean isValueTransformationRequired = false;
-
-                k = isKeyTransformationRequired ? JsonPath.read(variables.getInner(), k) : k;
-
-                if (v instanceof JSONAware){
-                    resolve(variables,(JSONAware)v);
-                }else if (v instanceof String v1) {
-                    isValueTransformationRequired = v1.charAt(0) == '$';
-                    v = isValueTransformationRequired ? JsonPath.read(variables.getInner(), v1) : v1;
-                }
-                if (isKeyTransformationRequired || isValueTransformationRequired){
-                    jsonObject.remove(key);
-                    jsonObject.put(k,v);
-                }
-            }
-        }else if (jsonAware instanceof JSONArray jsonArray){
-            JSONArray transformedArray = new JSONArray();
-            for (Object e : jsonArray){
-                if (e instanceof JSONAware o){
-                    resolve(variables,(JSONAware) e);
-                    transformedArray.add(e);
-                }else if (e instanceof String s){
-                    boolean isElementTransformationRequired = s.charAt(0) == '$' ;
-                    s = isElementTransformationRequired ? JsonPath.read(variables.getInner(),s) : s ;
-                    transformedArray.add(s);
-                }else {
-                    transformedArray.add(e);
-                }
-            }
-            jsonArray.clear();
-            jsonArray.addAll(transformedArray);
+    }
+    public static class Log extends JSONObjectWrapper {
+        public String getName(){
+            return get("name");
         }
 
+        public void setName(String name){
+            set("name",name);
+        }
+
+        public String getValue(){
+            return get("value");
+        }
+        public void setValue(String value){
+            set("value",value);
+        }
     }
+    public void finalizeAttribute(String attributeName, TestCase testCase){
+        JSONAware o = get(attributeName);
+
+        String builder = String.format("\n\t%s = %s", attributeName, o.toString()) +
+                String.format("\n\treturn JSON.stringify(%s); ", attributeName);
+
+        String s = (String)JavaScriptEvaluator.getInstance().eval(testCase,builder);
+
+        set(attributeName, (JSONAware) parse(s));
+    }
+
+
 
 
 
