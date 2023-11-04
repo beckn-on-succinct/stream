@@ -24,7 +24,7 @@ We support following assertions
 
 Type|Name|Attributes| Asserts
 -|-|-|-
-SinpleAssertion|script|message,js statement that returns a Boolean|being true
+SinpleAssertion|script|message,eval| eval statement is true
 CompoundAssertion|| assertions ( an array) |  
 | |or|  |if any of the assertion is true | 
 | |and|  |if all of the assertions are true |
