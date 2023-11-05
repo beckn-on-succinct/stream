@@ -3,9 +3,10 @@
 STREAM is used to string test rest apis.
 
 
-## The Specification
+## Writing String Tests
 Each String testing Usecase  is defined in the form of a flow-name.json. 
 Sample [here](./src/test/resources/ondc-1.2-ret10/flow1.json)
+We use [nashorn](https://github.com/openjdk/nashorn)  library to resolve the variables in the testcase json
 
 ## Executing flows
 ```
