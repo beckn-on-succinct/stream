@@ -59,12 +59,15 @@ public class Step extends JSONObjectWrapper {
             builder.header(StringUtil.valueOf(k), StringUtil.valueOf(v));
         });
         builder.timeout(Duration.ofSeconds(getRequest().getTimeout()));
-        if (getRequest().getHttpMethod() == HttpMethod.post) {
-            builder.POST(BodyPublishers.ofString(getRequest().getBody().toString()));
-        }else {
+
+        if (getRequest().getHttpMethod() == HttpMethod.get) {
             builder.GET();
+        }else {
+            builder.method(getRequest().getHttpMethod().toString(),BodyPublishers.ofString(getRequest().getBody().toString()));
         }
+
         builder.setHeader("Accept-Encoding", "gzip");
+
         builder.version(Version.HTTP_2);
 
         HttpRequest request = builder.build();
@@ -156,9 +159,7 @@ public class Step extends JSONObjectWrapper {
             if (script instanceof String) {
                 attributeFinalizer.append(String.format("\n\t%s", script));
             } else if (script instanceof JSONArray) {
-                ((JSONArray) script).forEach(v -> {
-                    attributeFinalizer.append(String.format("\n\t%s", v));
-                });
+                ((JSONArray) script).forEach(v -> attributeFinalizer.append(String.format("\n\t%s", v)));
             }
         }
 

@@ -1,7 +1,5 @@
 package in.humbhionline.certbot;
 
-import com.esotericsoftware.minlog.Log;
-import com.venky.core.date.DateUtils;
 import com.venky.core.string.StringUtil;
 import in.succinct.json.JSONObjectWrapper;
 import org.apache.commons.cli.CommandLine;
@@ -9,7 +7,6 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
@@ -50,6 +47,9 @@ public class TestRunner {
                 TestCase testCase = new TestCase(StringUtil.read(new FileReader(t)));
                 Variables variables = new Variables((JSONObject) JSONValue.parseWithException(initialVariables));
                 loadEnv(variables);
+                if (testCase.getVariables() != null){
+                    throw new RuntimeException("variables must be passed via -g option only");
+                }
                 testCase.setVariables(variables);
 
                 executeTest(testCase);
