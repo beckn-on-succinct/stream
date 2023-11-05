@@ -8,11 +8,11 @@ Each String testing Usecase  is defined in the form of a flow-name.json.
 Sample [here](./src/test/resources/ondc-1.2-ret10/flow1.json)
 
 ## Executing flows
-``
+```
 java -cp "target/classes:target/dependency/*" in.humbhionline.certbot.TestRunner -g config.json -t test1.json -t test2.json ... 
 or 
 bin/certbot.sh -g config.json -t test1.json -t test2.json ... 
-``
+```
 
 ## Installing
 
@@ -27,7 +27,9 @@ bin/certbot.sh -g config.json -t test1.json -t test2.json ...
 
 ## Creating a flow json file.
 Basic structure of the flow file is :
-``{
+
+```
+{
     "name":"A name for the flow";
 
     "steps": [ 
@@ -95,18 +97,21 @@ Basic structure of the flow file is :
         }
     ]
 
-}``
+}
+```
 
 
 config file is a simple json file:
-``{
+
+```
+{
      "x"  : "A",
      "y"  : { "B" : "C" } 
 }
 It can be accessed as x or y.B in script regions and 
 if you are using for substitions in requests like templates you can use "${x}" or "${y.B}"
 
-``
+```
 
 
 ## More on Assertions 
