@@ -40,9 +40,9 @@ public class JavaScriptEvaluator {
 
     private final ScriptEngine engine ;
 
-    public boolean evalBoolean(TestCase testCase, String function){
+    public boolean evalBoolean(TestCase testCase, String statements){
         try {
-            return Boolean.parseBoolean(StringUtil.valueOf(eval(testCase,function)));
+            return Boolean.parseBoolean(StringUtil.valueOf(eval(testCase,statements)));
         }catch (Exception ex){
             throw new AssertionException(ex);
         }

@@ -1,22 +1,27 @@
 package in.humbhionline.certbot;
 
 import com.esotericsoftware.minlog.Log;
+import com.venky.core.date.DateUtils;
 import com.venky.core.string.StringUtil;
+import in.succinct.json.JSONObjectWrapper;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Date;
 
 public class TestRunner {
 
-    public static void main(String[] args) throws ParseException, IOException {
+    public static void main(String[] args) throws IOException {
         Options options = getOptions();
 
         DefaultParser parser= new DefaultParser();
@@ -39,11 +44,41 @@ public class TestRunner {
         File[] tests = Arrays.stream(commandLine.getOptionValues("t")).map(File::new).toList().toArray(new File[]{});
         String initialVariables = StringUtil.read(new FileReader(g));
 
+        try {
 
-        for (File t : tests){
-            TestCase testCase = new TestCase(StringUtil.read(new FileReader(t)));
-            testCase.setVariables(new Variables(initialVariables));
-            executeTest(testCase);
+            for (File t : tests){
+                TestCase testCase = new TestCase(StringUtil.read(new FileReader(t)));
+                Variables variables = new Variables((JSONObject) JSONValue.parseWithException(initialVariables));
+                loadEnv(variables);
+                testCase.setVariables(variables);
+
+                executeTest(testCase);
+            }
+        }catch (Exception ex){
+            throw new RuntimeException(ex);
+        }
+
+
+    }
+
+    private static void loadEnv(Variables variables) {
+        Env env = new Env() ;
+        env.setToday( new Date());
+        env.setNow(new Date());
+        variables.setEnv(env);
+    }
+    public static class Env extends JSONObjectWrapper {
+        public Date getNow(){
+            return getTimestamp("now");
+        }
+        public void setNow(Date now){
+            set("now",now,TIMESTAMP_FORMAT);
+        }
+        public Date getToday(){
+            return getDate("today");
+        }
+        public void setToday(Date today){
+            set("today",today, DATE_FORMAT);
         }
 
     }

@@ -29,7 +29,7 @@ public class Response extends JSONObjectWrapper {
         map.forEach((k,v)->{
             JSONArray array = new JSONArray();
             array.addAll(v);
-            headers.set(k, array);
+            headers.set(k.toUpperCase(), array);
         });
     }
 }

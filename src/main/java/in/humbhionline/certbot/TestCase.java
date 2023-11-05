@@ -46,14 +46,14 @@ public class TestCase extends JSONObjectWrapper {
                     step.execute(this);
                     Logger.getInstance().log(String.format("\t Step : %s Successful",step.getName()));
                 }catch (Exception ex){
-                    Logger.getInstance().log(String.format("\t Step : %s Failed",step.getName()));
+                    Logger.getInstance().log(String.format("\t Step : %s Failed with %s",step.getName(),ex.getMessage()));
+                    Logger.getInstance().log(ex);
                     throw ex;
                 }
             }
             Logger.getInstance().log(String.format("Test Case : %s Passed", getName()));
         }catch (Exception ex) {
             Logger.getInstance().log(String.format("Test Case : %s Failed", getName()));
-            throw ex;
         }
     }
 

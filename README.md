@@ -17,7 +17,7 @@ Common configuration  config.json  (These have global variables that can be used
 ## Testcase. 
 Test cases are declarative jsons 
 Sample [here](./src/test/resources/testcase.json)
-We use [jsonpath](https://github.com/json-path/JsonPath)  library to resolve the variables in the testcase json
+We use [nashorn](https://github.com/openjdk/nashorn)  library to resolve the variables in the testcase json
 
 ### Assertions 
 We support following assertions 

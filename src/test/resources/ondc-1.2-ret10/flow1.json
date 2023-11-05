@@ -1,0 +1,100 @@
+{
+    "name": "flow1",
+    "steps": [
+        {
+            "name": "search",
+            "request_finalizer": [  "var UUID = Java.type('java.util.UUID') ;",
+                                    "var message_id = UUID.randomUUID().toString();",
+                                    "var transaction_id = UUID.randomUUID().toString() ;",
+                                    "request.body.context.message_id = message_id ;",
+                                    "request.body.context.transaction_id = transaction_id ; "],
+            "request": {
+                "api": "/search",
+                "body": {
+                    "context": {
+                        "bpp_id": "${context.bpp_id}",
+                        "city": "${context.city}",
+                        "core_version": "${context.core_version}",
+                        "country": "${context.country}",
+                        "domain": "${context.domain}",
+                        "action": "search",
+                        "bap_id": "${context.bap_id}",
+                        "bap_uri": "${context.bap_uri}",
+                        "ttl": "${context.ttl}",
+                        "timestamp": "${env.now}"
+                    },
+                    "message": {
+                        "intent": {
+                            "fulfillment": {
+                                "type": "Delivery"
+                            },
+                            "payment": {
+                                "@ondc/org/buyer_app_finder_fee_amount": "3",
+                                "@ondc/org/buyer_app_finder_fee_type": "percent"
+                            }
+                        }
+                    }
+                },
+                "headers": {
+                    "Authorization": "${authorization.basic}",
+                    "Content-Type": "application/json",
+                    "X-CallBackToBeSynchronized": "Y"
+                },
+                "method": "post",
+                "timeout": 60,
+                "url": "${sync_bap_url}"
+            },
+            "assertion": {
+                "and": [
+                    {
+                        "script": {
+                            "eval": "search.response.data[0].message.catalog['bpp/providers'][0].items.length > 5",
+                            "message": "Atleast 5 Items in Catalog"
+                        }
+                    }
+                ]
+            },
+            "logs": [
+                {
+                    "name": "search_full_catalog_refresh.log",
+                    "value": "${JSON.stringify(search.request.body)}"
+                },
+                {
+                    "name": "on_search_full_catalog_refresh.log",
+                    "value": "${JSON.stringify(search.response.data[0])}"
+                }
+            ]
+        },
+        {
+            "name": "ondc_validator",
+            "request": {
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "body": {
+                    "domain": "${context.domain}",
+                    "version": "${context.core_version}"
+                },
+                "method": "post",
+                "timeout": 60,
+                "url": "https://log-validation.ondc.org/api/validate"
+            },
+            "request_finalizer": "request.body.payload = {\"search_full_catalog_refresh\" : search.request.body, \"on_search_full_catalog_refresh\"  : search.response.data[0] }",
+            "assertion": {
+                "script": {
+                    "eval": "Object.keys(ondc_validator.response.error).length === 0"
+                }
+            },
+            "logs": [
+                {
+                    "name": "ondcvalidator.log",
+                    "value": "${JSON.stringify(ondc_validator.response)}"
+                },
+                {
+                    "name": "ondcvalidator_payload.json",
+                    "value": "${JSON.stringify(ondc_validator.request.body)}"
+                }
+            ]
+        }
+    ]
+}

@@ -6,6 +6,7 @@ import com.venky.core.util.ObjectUtil;
 import in.humbhionline.certbot.Request.HttpMethod;
 import in.succinct.json.JSONObjectWrapper;
 import in.succinct.json.ObjectWrappers;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONAware;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -84,21 +85,35 @@ public class Step extends JSONObjectWrapper {
                 }
                 is = new ByteArrayInputStream(StringUtil.readBytes(is,true));
 
-                if (r.getStatus() >= 200 && r.getStatus() < 299){
-                    r.set("data", (JSONAware) JSONValue.parseWithException(StringUtil.read(is,true)));
-                    r.set("error", new JSONObject());
-                }else {
-                    r.set("error",(JSONAware) JSONValue.parseWithException(StringUtil.read(is,true)));
-                    r.set("data",new JSONObject());
+                String dataOnThewire = StringUtil.read(is, true);
+
+                String mainAttribute = "data";
+                String otherAttribute = "error";
+
+                if (r.getStatus() < 200 || r.getStatus() >= 300){
+                    mainAttribute  = "error";
+                    otherAttribute = "data";
                 }
+
+                JSONArray content_type = r.getHeaders().get("CONTENT-TYPE");
+                if (content_type != null && ((String)content_type.get(0)).contains("application/json")) {
+                    r.set(mainAttribute, (JSONAware) JSONValue.parseWithException(dataOnThewire));
+                }else {
+                    r.set(mainAttribute,dataOnThewire);
+                }
+                r.set(otherAttribute, new JSONObject());
+
                 setResponse(r);
             }
 
 
             testCase.getVariables().set(getName(),getExportedVariables());
-            finalizeAttribute("assertion",testCase);
-            getAssertion().assertTrue(testCase);
             Logger.getInstance().logPayloads(testCase,this);
+
+            if (getAssertion() != null) {
+                finalizeAttribute("assertion", testCase);
+                getAssertion().assertTrue(testCase);
+            }
 
         }catch (Exception ex){
             throw  new RuntimeException(ex);
@@ -132,10 +147,25 @@ public class Step extends JSONObjectWrapper {
             set("value",value);
         }
     }
+    @SuppressWarnings("unchecked")
     public void finalizeAttribute(String attributeName, TestCase testCase){
         JSONAware o = get(attributeName);
+        Object script = get(attributeName +"_finalizer");
+        StringBuilder attributeFinalizer = new StringBuilder();
+        if (script != null) {
+            if (script instanceof String) {
+                attributeFinalizer.append(String.format("\n\t%s", script));
+            } else if (script instanceof JSONArray) {
+                ((JSONArray) script).forEach(v -> {
+                    attributeFinalizer.append(String.format("\n\t%s", v));
+                });
+            }
+        }
+
+
 
         String builder = String.format("\n\t%s = %s", attributeName, o.toString()) +
+                String.format("\n\t %s",attributeFinalizer) +
                 String.format("\n\treturn JSON.stringify(%s); ", attributeName);
 
         String s = (String)JavaScriptEvaluator.getInstance().eval(testCase,builder);

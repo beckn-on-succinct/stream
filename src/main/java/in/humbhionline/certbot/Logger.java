@@ -46,7 +46,7 @@ public class Logger {
 
 
         for (Log log : step.getLogs()){
-            String file = String.format("%s.json" ,log.getName());
+            String file = log.getName();
             String content = log.getValue();
             File logFile = new File(subDirectory,file);
             try (FileWriter os = new FileWriter(logFile); BufferedWriter bw = new BufferedWriter(os); ){

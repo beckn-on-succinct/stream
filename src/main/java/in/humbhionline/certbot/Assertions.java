@@ -34,11 +34,11 @@ public class Assertions extends ObjectWrappers<Assertion> {
                 assertion.assertTrue(testCase);
             }
         }
-
         @Override
-        public JSONArray getInner() {
-            return super.getInner();
+        public String toString() {
+            return Condition.toString(this);
         }
+
     }
 
     public static class Or extends Assertions implements Condition {
@@ -53,5 +53,9 @@ public class Assertions extends ObjectWrappers<Assertion> {
             return false;
         }
 
+        @Override
+        public String toString() {
+            return Condition.toString(this);
+        }
     }
 }

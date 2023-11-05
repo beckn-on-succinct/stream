@@ -8,6 +8,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+
+/**
+ * Conditions evaluate to true of false.
+ */
 public interface Condition {
     boolean eval(TestCase testCase);
     default void assertTrue(TestCase testCase){
@@ -17,6 +21,9 @@ public interface Condition {
     }
 
 
+    static String toString(Condition condition){
+        return String.format("{\"%s\": \"%s\" }",Condition.getType(condition), condition.getInner().toString());
+    }
     JSONAware getInner();
 
     Map<String,Class<? extends Condition>> CONDITION_MAP = new HashMap<>(){{

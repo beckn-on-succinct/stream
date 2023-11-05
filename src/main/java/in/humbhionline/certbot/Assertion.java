@@ -5,6 +5,9 @@ import in.humbhionline.certbot.Assertions.Or;
 import in.succinct.json.JSONObjectWrapper;
 import org.json.simple.JSONObject;
 
+/**
+ * Assertion asserts the condtion it is associated with
+ */
 @SuppressWarnings("ALL")
 public class Assertion extends JSONObjectWrapper implements Condition {
 
@@ -46,7 +49,19 @@ public class Assertion extends JSONObjectWrapper implements Condition {
 
     @Override
     public boolean eval(TestCase testCase){
-        return getCondition().eval(testCase);
+        Condition condition = getCondition();
+        if (condition != null){
+            return condition.eval(testCase);
+        }
+        return true;
+    }
+
+    @Override
+    public void assertTrue(TestCase testCase) {
+        Condition condition = getCondition();
+        if (condition != null){
+            condition.assertTrue(testCase);
+        }
     }
 
     public String toString(){

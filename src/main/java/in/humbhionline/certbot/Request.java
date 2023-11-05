@@ -58,10 +58,8 @@ public class Request extends JSONObjectWrapper {
         set("headers",headers);
     }
 
-    public JSONObject getBody(){
+    public Object getBody(){
         return get("body");
     }
-    public void setBody(JSONObject body){
-        set("body",body);
-    }
+
 }
