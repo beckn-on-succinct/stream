@@ -63,7 +63,7 @@ public class Step extends JSONObjectWrapper {
         if (getRequest().getHttpMethod() == HttpMethod.get) {
             builder.GET();
         }else {
-            builder.method(getRequest().getHttpMethod().toString(),BodyPublishers.ofString(getRequest().getBody().toString()));
+            builder.method(getRequest().getHttpMethod().toString().toUpperCase(),BodyPublishers.ofString(getRequest().getBody().toString()));
         }
 
         builder.setHeader("Accept-Encoding", "gzip");
@@ -153,6 +153,7 @@ public class Step extends JSONObjectWrapper {
     @SuppressWarnings("unchecked")
     public void finalizeAttribute(String attributeName, TestCase testCase){
         JSONAware o = get(attributeName);
+
         Object script = get(attributeName +"_finalizer");
         StringBuilder attributeFinalizer = new StringBuilder();
         if (script != null) {
@@ -162,7 +163,6 @@ public class Step extends JSONObjectWrapper {
                 ((JSONArray) script).forEach(v -> attributeFinalizer.append(String.format("\n\t%s", v)));
             }
         }
-
 
 
         String builder = String.format("\n\t%s = %s", attributeName, o.toString()) +
