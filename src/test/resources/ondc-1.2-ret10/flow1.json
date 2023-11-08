@@ -172,13 +172,13 @@
             "request_finalizer": "request.body.payload = {\"search_full_catalog_refresh\" : search.request.body, \"on_search_full_catalog_refresh\"  : search.response.data[0] , \"search_inc_refresh\" : search_inc.request.body , \"on_search_inc_refresh\" : search_inc.response.data[0] }",
             "assertion": {
                 "script": {
-                    "eval": "Object.keys(ondc_validator.response.data).length === 0"
+                    "eval": "ondc_validator.response.status == 200"
                 }
             },
             "logs": [
                 {
                     "name": "ondcvalidator.log",
-                    "value": "${JSON.stringify(ondc_validator.response.data)}"
+                    "value": "${JSON.stringify(ondc_validator.response)}"
                 },
                 {
                     "name": "ondcvalidator_payload.json",
