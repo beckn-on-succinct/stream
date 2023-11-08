@@ -2,8 +2,8 @@ package in.humbhionline.certbot;
 
 import com.venky.core.io.ByteArrayInputStream;
 import com.venky.core.string.StringUtil;
-import com.venky.core.util.ObjectUtil;
 import in.humbhionline.certbot.Request.HttpMethod;
+import in.succinct.json.JSONAwareWrapper;
 import in.succinct.json.JSONObjectWrapper;
 import in.succinct.json.ObjectWrappers;
 import org.json.simple.JSONArray;
@@ -11,6 +11,7 @@ import org.json.simple.JSONAware;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+import java.io.FileReader;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -41,14 +42,39 @@ public class Step extends JSONObjectWrapper {
         return client;
     }
 
+    public String getFlow(){
+        return get("flow");
+    }
+    public void setFlow(String flow){
+        set("flow",flow);
+    }
+
+    public void execute(TestCase testCase){
+        String flow = getFlow();
+        if (flow != null) {
+            finalizeAttribute("flow",testCase);
+            executeSubFlow(testCase,getFlow());
+        }else {
+            executeRequest(testCase);
+        }
+    }
+
+    private void executeSubFlow(TestCase testCase,String subFlowName) {
+        try {
+            TestCase subFlow = new TestCase(StringUtil.read(new FileReader(subFlowName)));
+            Variables state = new Variables(testCase.getVariables().getInner());
+            subFlow.setVariables(state);
+            subFlow.execute();
+        }catch (Exception ex){
+            throw new RuntimeException(ex);
+        }
+    }
+
     @SuppressWarnings("ALL")
-    public void execute(TestCase testCase) {
+    public void executeRequest(TestCase testCase) {
         finalizeAttribute("request",testCase);
         StringBuilder url = new StringBuilder();
         url.append(getRequest().getUrl());
-        if (!ObjectUtil.isVoid(getRequest().getApi())){
-            url.append(getRequest().getApi());
-        }
         Builder builder = HttpRequest.newBuilder(URI.create(url.toString()));
 
         if (getRequest().getHeaders() == null) {
@@ -152,9 +178,23 @@ public class Step extends JSONObjectWrapper {
     }
     @SuppressWarnings("unchecked")
     public void finalizeAttribute(String attributeName, TestCase testCase){
-        JSONAware o = get(attributeName);
-
+        Object o = get(attributeName);
         Object script = get(attributeName +"_finalizer");
+        if (o == null && script == null){
+            return;
+        }
+        boolean isJson = false;
+        if (o == null){
+            try {
+                Class<?> type = getClass().getMethod("get" + StringUtil.camelize(attributeName)).getReturnType();
+
+                isJson = JSONAware.class.isAssignableFrom(type) || JSONAwareWrapper.class.isAssignableFrom(type);
+            }catch (Exception ignored){
+            }
+        }else {
+            isJson = o instanceof JSONAware;
+        }
+
         StringBuilder attributeFinalizer = new StringBuilder();
         if (script != null) {
             if (script instanceof String) {
@@ -164,16 +204,37 @@ public class Step extends JSONObjectWrapper {
             }
         }
 
+        StringBuilder builder = new StringBuilder();
+        if (isJson) {
+            builder.append(String.format("\n\t%s = %s", attributeName, o));
+        }else {
+            builder.append(String.format("\n\t%s = \"%s\"", attributeName, o));
+        }
+        builder.append(String.format("\n\t %s", attributeFinalizer));
+        if (isJson) {
+            builder.append(String.format("\n\treturn JSON.stringify(%s); ", attributeName));
+        }else {
+            builder.append(String.format("\n\treturn %s; ", attributeName));
+        }
 
-        String builder = String.format("\n\t%s = %s", attributeName, o.toString()) +
-                String.format("\n\t %s",attributeFinalizer) +
-                String.format("\n\treturn JSON.stringify(%s); ", attributeName);
+        String s = (String)JavaScriptEvaluator.getInstance().eval(testCase, builder.toString());
 
-        String s = (String)JavaScriptEvaluator.getInstance().eval(testCase,builder);
-
-        set(attributeName, (JSONAware) parse(s));
+        if (isJson) {
+            set(attributeName, (JSONAware) parse(s));
+        }else {
+            set(attributeName, s);
+        }
     }
 
+    public static class SubFlowException extends RuntimeException{
+        public SubFlowException(String message) {
+            super(message);
+        }
+
+        public SubFlowException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
 
 
 
@@ -207,8 +268,6 @@ public class Step extends JSONObjectWrapper {
     public void setAssertion(Assertion assertion){
         set("assertion",assertion);
     }
-
-
 
 
 }

@@ -9,7 +9,6 @@
                                     "request.body.context.message_id = message_id ;",
                                     "request.body.context.transaction_id = transaction_id ; "],
             "request": {
-                "api": "/search",
                 "body": {
                     "context": {
                         "bpp_id": "${context.bpp_id}",
@@ -42,7 +41,7 @@
                 },
                 "method": "post",
                 "timeout": 60,
-                "url": "${sync_bap_url}"
+                "url": "${sync_bap_url}/search"
             },
             "assertion": {
                 "and": [
@@ -66,6 +65,97 @@
             ]
         },
         {
+            "name" : "custom_bpp_item_deactivate" ,
+            "flow" : "${bpp.item_deactivating_flow}"
+        },
+        {
+            "name": "search_inc",
+            "request": {
+                "body": {
+                    "context": {
+                        "bpp_id": "${context.bpp_id}",
+                        "city": "*",
+                        "core_version": "${context.core_version}",
+                        "country": "${context.country}",
+                        "domain": "${context.domain}",
+                        "action": "search",
+                        "bap_id": "${context.bap_id}",
+                        "bap_uri": "${context.bap_uri}",
+                        "ttl": "${context.ttl}",
+                    },
+                    "message": {
+                        "intent": {
+                            "payment": {
+                                "@ondc/org/buyer_app_finder_fee_amount": "3",
+                                "@ondc/org/buyer_app_finder_fee_type": "percent"
+                            },
+                            "tags" : [
+                                {
+                                   "code" : "catalog_inc",
+                                   "list" : [
+                                      {
+                                         "code" : "start_time"
+                                      },
+                                      {
+                                         "code" : "end_time"
+                                      }
+                                   ]
+                                }
+                             ]
+                        }
+                    }
+                },
+                "headers": {
+                    "Authorization": "${authorization.basic}",
+                    "Content-Type": "application/json",
+                    "X-CallBackToBeSynchronized": "Y"
+                },
+                "method": "post",
+                "timeout": 60,
+                "url": "${sync_bap_url}/search"
+            },
+            "request_finalizer": [  "var DateUtil = Java.type('in.humbhionline.certbot.TestRunner.DateUtil') ;",
+                                    "var end = DateUtil.now(\"UTC\", \"yyyy-MM-dd'T'HH:mm:ss.SSSXXX\");",
+                                    "var start = DateUtil.addMinutes(end, -2, \"UTC\", \"yyyy-MM-dd'T'HH:mm:ss.SSSXXX\");",
+                                    "var UUID = Java.type('java.util.UUID') ;",
+                                    "var message_id = UUID.randomUUID().toString();",
+                                    "var transaction_id = UUID.randomUUID().toString() ;",
+                                    "request.body.context.message_id = message_id ;",
+                                    "request.body.context.transaction_id = transaction_id ; ",
+                                    "request.body.context.timestamp = end ; ",
+                                    "request.body.message.intent.tags[0].list[0].value = start ;",
+                                    "request.body.message.intent.tags[0].list[1].value = end ;"
+            ],
+            "assertion": {
+                "and": [
+                    {
+                        "script": {
+                            "eval": "search_inc.response.data[0].message.catalog['bpp/providers'][0].items.length == 1",
+                            "message": "Nothing to send"
+                        }
+                    }
+                ]
+            },
+            "logs": [
+                {
+                    "name": "search_inc.log",
+                    "value": "${JSON.stringify(search_inc.request.body)}"
+                },
+                {
+                    "name": "on_search_inc.log",
+                    "value": "${JSON.stringify(search_inc.response.data[0])}"
+                },
+                {
+                    "name": "on_search_error.log",
+                    "value": "${JSON.stringify(search_inc.response.error)}"
+                }
+            ]
+        },
+        {
+            "name" : "custom_bpp_item_activate" ,
+            "flow" : "${bpp.item_activating_flow}"
+        },
+        {
             "name": "ondc_validator",
             "request": {
                 "headers": {
@@ -79,7 +169,7 @@
                 "timeout": 60,
                 "url": "https://log-validation.ondc.org/api/validate"
             },
-            "request_finalizer": "request.body.payload = {\"search_full_catalog_refresh\" : search.request.body, \"on_search_full_catalog_refresh\"  : search.response.data[0] }",
+            "request_finalizer": "request.body.payload = {\"search_full_catalog_refresh\" : search.request.body, \"on_search_full_catalog_refresh\"  : search.response.data[0] , \"search_inc_refresh\" : search_inc.request.body , \"on_search_inc_refresh\" : search_inc.response.data[0] }",
             "assertion": {
                 "script": {
                     "eval": "Object.keys(ondc_validator.response.error).length === 0"

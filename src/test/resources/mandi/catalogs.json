@@ -1,0 +1,50 @@
+{
+    "name": "flow1",
+    "steps": [
+        {
+            "name": "login",
+            "request": {
+                "body": {
+                    "User": {
+                        "PhoneNumber" : "${config.PhoneNumber}",
+                        "Password" : "${config.Password}"
+                    }
+                },
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "method": "post",
+                "timeout": 60,
+                "url": "${config.url}/login"
+            },
+            "assertion": {
+                "script": {
+                    "eval": "login.response.data.User.ApiKey != null",
+                    "message": "Didnot get back api key "
+                }
+            }
+        },
+        {
+            "name": "myfacilities",
+            "request": {
+                "headers": {
+                    "Content-Type": "application/json",
+                    "X-ApiKey" : "${login.response.data.User.ApiKey}"
+                },
+                "method": "get",
+                "timeout": 60,
+                "url": "${config.url}/facilities/mine"
+            },
+            "assertion" : {
+                "script" : {
+                    "eval" : "myfacilities.response.status == 200 " 
+                }
+            },
+            "logs" : [{ "name":"facilities" , "value": "${JSON.stringify(myfacilities.response.data)}"}]
+
+
+            
+        }
+
+    ]
+}

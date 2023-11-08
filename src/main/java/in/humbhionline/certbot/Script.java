@@ -14,7 +14,7 @@ public class Script extends JSONObjectWrapper implements Condition {
     }
 
     private void append(StringBuilder builder, String possiblyReturnStatement){
-        if (possiblyReturnStatement.trim().matches("return[ (]+")){
+        if (possiblyReturnStatement.trim().matches("return[ (]+.*")){
             builder.append(possiblyReturnStatement);
         }else {
             builder.append(String.format(" return %s;",possiblyReturnStatement));
@@ -31,7 +31,8 @@ public class Script extends JSONObjectWrapper implements Condition {
             JSONArray array = (JSONArray) eval;
             for (Iterator<Object> i = array.iterator();i.hasNext();){
                 Object o = i.next();
-                if (!i.hasNext()){
+                builder.append("\n\t");
+                if (i.hasNext()){
                     builder.append(o);
                 }else {
                     append(builder,String.valueOf(o));

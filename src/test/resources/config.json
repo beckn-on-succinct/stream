@@ -3,11 +3,19 @@
         "country" :"IND",
         "city" : "std:080" ,
         "domain": "ONDC:RET10",
-        "core_version" :"1.2",
-        "bpp_id" : "preprod-wiggles.humbhionline.in"
+        "core_version" :"1.2.0",
+        "bpp_id" : "preprod-wiggles.humbhionline.in",
+        "bap_id" : "certbot-preprod.humbhionline.in",
+        "bap_uri" : "https://certbot-preprod.humbhionline.in/bap",
+        "ttl" : "PT30S"
     },
     "authorization" : {
         "basic" : "Basic ..."
     },
-    "sync_bap_url" : "https://certbot-preprod.humbhionline.in/bap/api/bg"
+    "sync_bap_url" : "https://certbot-preprod.humbhionline.in/bap/api/bg",
+    "bpp" : {
+        "item_deactivating_flow" : "./src/test/resources/preprod-wiggles.humbhionline.in/deactivate_item.json" ,
+        "item_activating_flow" : "./src/test/resources/preprod-wiggles.humbhionline.in/activate_item.json",
+        "x_api_key": "..."
+    }
 }

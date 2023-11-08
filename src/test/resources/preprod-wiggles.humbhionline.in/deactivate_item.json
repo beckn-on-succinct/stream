@@ -1,0 +1,44 @@
+{
+    "name": "deactivating_item",
+    "steps" : [
+        {
+            "name": "searchRandom",
+            "request" : {
+                "url" : "https://preprod-wiggles.humbhionline.in/items/search?q=OBJECT_ID:preprod+AND+OBJECT_NAME:Berry",
+                "method" : "get",
+                "headers": {
+                    "Content-type": "application/json" ,
+                    "X-ApiKey" : "${bpp.x_api_key}"
+                }
+            },
+            "assertion" : {
+                "script": {
+                    "eval": "searchRandom.response.data.Items.length == 1"
+                }
+            },
+            "logs" : [{"name":  "response", "value" :  "${JSON.stringify(searchRandom.response.data.Items[0])}" }]
+        },
+        {
+            "name": "deactivate",
+            "request" : {
+                "url" : "https://preprod-wiggles.humbhionline.in/items/save",
+                "method" : "post",
+                "headers": {
+                    "X-ApiKey" : "${bpp.x_api_key}",
+                    "Content-Type" : "application/json"
+                },
+                "body" : {
+                    "Item" : {
+                        "Id" : "${searchRandom.response.data.Items[0].Id}",
+                        "Active" : "N"
+                    }
+                }
+            },
+            "logs" : [
+                        {"name":  "deactivate_request.json", "value" :  "${JSON.stringify(deactivate.request.body)}"  },
+                        {"name":  "deactivate_response.json", "value" :  "${JSON.stringify(deactivate.response.data)}"  }
+                    ]
+        }
+    ]
+
+}

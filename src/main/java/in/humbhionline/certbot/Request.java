@@ -15,12 +15,6 @@ public class Request extends JSONObjectWrapper {
         super(payload);
     }
 
-    public String getApi(){
-        return get("api");
-    }
-    public void setApi(String api){
-        set("api",api);
-    }
 
     public String getUrl(){
         return get("url");

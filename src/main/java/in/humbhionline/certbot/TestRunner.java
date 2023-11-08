@@ -1,5 +1,6 @@
 package in.humbhionline.certbot;
 
+import com.venky.core.date.DateUtils;
 import com.venky.core.string.StringUtil;
 import in.succinct.json.JSONObjectWrapper;
 import org.apache.commons.cli.CommandLine;
@@ -13,8 +14,11 @@ import org.json.simple.JSONValue;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class TestRunner {
 
@@ -65,6 +69,8 @@ public class TestRunner {
         Env env = new Env() ;
         env.setToday( new Date());
         env.setNow(new Date());
+
+        System.getProperties().forEach((k,v)->env.set((String)k,(String)v));
         variables.setEnv(env);
     }
     public static class Env extends JSONObjectWrapper {
@@ -79,6 +85,29 @@ public class TestRunner {
         }
         public void setToday(Date today){
             set("today",today, DATE_FORMAT);
+        }
+
+
+    }
+    public static class DateUtil {
+        public static String addMinutes(String date, int minutes, String tz, String dateFormat){
+            SimpleDateFormat fmt = new SimpleDateFormat(dateFormat);
+            fmt.setTimeZone(TimeZone.getTimeZone(tz));
+            try {
+                Date aDate = fmt.parse(date);
+                return fmt.format(DateUtils.addMinutes(aDate,minutes));
+            }catch (Exception ex){
+                return null;
+            }
+        }
+        public static String now(String tz,String dateFormat){
+            SimpleDateFormat fmt = new SimpleDateFormat(dateFormat);
+            fmt.setTimeZone(TimeZone.getTimeZone(tz));
+            try {
+                return fmt.format(new Date());
+            }catch (Exception ex){
+                return null;
+            }
         }
 
     }
@@ -108,7 +137,7 @@ public class TestRunner {
         try {
             testCase.execute();
         }catch (Exception ex){
-            Logger.getInstance().log(ex);
+            Logger.getInstance().log(ex.getMessage());
         }
     }
 

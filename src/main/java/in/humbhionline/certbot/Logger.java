@@ -2,6 +2,7 @@ package in.humbhionline.certbot;
 
 import com.venky.core.util.ObjectUtil;
 import in.humbhionline.certbot.Step.Log;
+import in.humbhionline.certbot.Step.Logs;
 import org.json.simple.JSONObject;
 
 import java.io.BufferedWriter;
@@ -39,9 +40,13 @@ public class Logger {
         if (getLogDirectory() == null){
             return;
         }
+        if (step.getLogs() == null){
+            step.setLogs(new Logs());
+        }
         String dir = testCase.getName();
         File subDirectory = new File(getLogDirectory(),dir);
         subDirectory.mkdirs();
+
         step.finalizeAttribute("logs",testCase);
 
 
