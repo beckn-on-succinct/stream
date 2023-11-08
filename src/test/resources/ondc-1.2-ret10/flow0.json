@@ -1,0 +1,2248 @@
+{
+    "name": "flow1",
+    "steps": [
+        {
+            "name": "search",
+            "request_finalizer": [  "var UUID = Java.type('java.util.UUID') ;",
+                                    "var message_id = UUID.randomUUID().toString();",
+                                    "var transaction_id = UUID.randomUUID().toString() ;",
+                                    "request.body.context.message_id = message_id ;",
+                                    "request.body.context.transaction_id = transaction_id ; "],
+            "request": {
+                "body": {
+                    "context": {
+                        "bpp_id": "${context.bpp_id}",
+                        "city": "${context.city}",
+                        "core_version": "${context.core_version}",
+                        "country": "${context.country}",
+                        "domain": "${context.domain}",
+                        "action": "search",
+                        "bap_id": "${context.bap_id}",
+                        "bap_uri": "${context.bap_uri}",
+                        "ttl": "${context.ttl}",
+                        "timestamp": "${env.now}"
+                    },
+                    "message": {
+                        "intent": {
+                            "fulfillment": {
+                                "type": "Delivery"
+                            },
+                            "payment": {
+                                "@ondc/org/buyer_app_finder_fee_amount": "3",
+                                "@ondc/org/buyer_app_finder_fee_type": "percent"
+                            }
+                        }
+                    }
+                },
+                "headers": {
+                    "Authorization": "${authorization.basic}",
+                    "Content-Type": "application/json",
+                    "X-CallBackToBeSynchronized": "Y"
+                },
+                "method": "post",
+                "timeout": 60,
+                "url": "${sync_bap_url}/search"
+            },
+            "response" : {
+                "data" : [{ "context" : {
+                          "action" : "on_search",
+                          "bap_id" : "certbot-preprod.humbhionline.in",
+                          "bap_uri" : "https://certbot-preprod.humbhionline.in/bap",
+                          "bpp_id" : "falconsai.com",
+                          "bpp_uri" : "https://falconsai.com/v1/gf/ecomm/fnb",
+                          "city" : "std:080",
+                          "core_version" : "1.2.0",
+                          "country" : "IND",
+                          "domain" : "ONDC:RET11",
+                          "message_id" : "2a3b0437-1604-4e97-9d03-61f1aa5144d9",
+                          "timestamp" : "2023-11-08T18:15:09.410Z",
+                          "transaction_id" : "08f10827-e4ed-430d-8e08-48ddb21c91a3",
+                          "ttl" : "PT30S"
+                       },
+                       "message" : {
+                          "catalog" : {
+                             "bpp/descriptor" : {
+                                "images" : [
+                                   "https://gfmarketing.s3.ap-south-1.amazonaws.com/whatsapp/gflogo.png"
+                                ],
+                                "long_desc" : "GrowthFalcons is a registered seller on ONDC (Open Network Digital Commerce) an Initiative by Govt. of India to enable SMBs to receive direct orders. Now receive direct orders and say NO to hefty commissions. Start driving additional business, higher margins & tap consumer demand information with GrowthFalcons.",
+                                "name" : "Growth Falcons",
+                                "short_desc" : "GrowthFalcons is a registered seller on ONDC (Open Network Digital Commerce) an Initiative by Govt. of India to enable SMBs to receive direct orders.",
+                                "symbol" : "https://gfmarketing.s3.ap-south-1.amazonaws.com/whatsapp/gflogo.png"
+                             },
+                             "bpp/fulfillments" : [
+                                {
+                                   "id" : "F1",
+                                   "type" : "Delivery"
+                                }
+                             ],
+                             "bpp/providers" : [
+                                {
+                                   "descriptor" : {
+                                      "images" : [
+                                         "https://gfmarketing.s3.ap-south-1.amazonaws.com/logo/Online_Shoping_29.jpg"
+                                      ],
+                                      "long_desc" : "Paradise Thhaliwalaa",
+                                      "name" : "Paradise Thhaliwalaa",
+                                      "short_desc" : "Paradise Thhaliwalaa",
+                                      "symbol" : "https://online-logo.s3-ap-southeast-1.amazonaws.com/ondc/73030/k1sm8pz5564/restaurant/thumb_2023_08_02_17_22_15_WhatsApp_Image_2023_08_02_at_16.46.09.jpeg"
+                                   },
+                                   "id" : "GFFBRTBU1692858295",
+                                   "time" : {
+                                      "label" : "close",
+                                      "timestamp" : "2023-11-08T18:15:09.410Z"
+                                   }
+                                },
+                                {
+                                   "@ondc/org/fssai_license_no" : "11222333000079",
+                                   "categories" : [
+                                      {
+                                         "descriptor" : {
+                                            "images" : [],
+                                            "long_desc" : "World Cup Specials",
+                                            "name" : "World Cup Specials",
+                                            "short_desc" : "World Cup Specials"
+                                         },
+                                         "id" : "3550991",
+                                         "parent_category_id" : "",
+                                         "tags" : [
+                                            {
+                                               "code" : "type",
+                                               "list" : [
+                                                  {
+                                                     "code" : "type",
+                                                     "value" : "custom_menu"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "display",
+                                               "list" : [
+                                                  {
+                                                     "code" : "rank",
+                                                     "value" : "2"
+                                                  }
+                                               ]
+                                            }
+                                         ]
+                                      },
+                                      {
+                                         "descriptor" : {
+                                            "images" : [],
+                                            "long_desc" : "Rajasthani Special Thalis - Combos",
+                                            "name" : "Rajasthani Special Thalis - Combos",
+                                            "short_desc" : "Rajasthani Special Thalis - Combos"
+                                         },
+                                         "id" : "2780296",
+                                         "parent_category_id" : "",
+                                         "tags" : [
+                                            {
+                                               "code" : "type",
+                                               "list" : [
+                                                  {
+                                                     "code" : "type",
+                                                     "value" : "custom_menu"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "display",
+                                               "list" : [
+                                                  {
+                                                     "code" : "rank",
+                                                     "value" : "84"
+                                                  }
+                                               ]
+                                            }
+                                         ]
+                                      },
+                                      {
+                                         "descriptor" : {
+                                            "images" : [],
+                                            "long_desc" : "Rajasthani Special Gravies",
+                                            "name" : "Rajasthani Special Gravies",
+                                            "short_desc" : "Rajasthani Special Gravies"
+                                         },
+                                         "id" : "2780298",
+                                         "parent_category_id" : "",
+                                         "tags" : [
+                                            {
+                                               "code" : "type",
+                                               "list" : [
+                                                  {
+                                                     "code" : "type",
+                                                     "value" : "custom_menu"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "display",
+                                               "list" : [
+                                                  {
+                                                     "code" : "rank",
+                                                     "value" : "86"
+                                                  }
+                                               ]
+                                            }
+                                         ]
+                                      },
+                                      {
+                                         "descriptor" : {
+                                            "name" : "Add Ons"
+                                         },
+                                         "id" : "626575",
+                                         "tags" : [
+                                            {
+                                               "code" : "type",
+                                               "list" : [
+                                                  {
+                                                     "code" : "type",
+                                                     "value" : "custom_group"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "config",
+                                               "list" : [
+                                                  {
+                                                     "code" : "min",
+                                                     "value" : "0"
+                                                  },
+                                                  {
+                                                     "code" : "max",
+                                                     "value" : "3"
+                                                  },
+                                                  {
+                                                     "code" : "input",
+                                                     "value" : "select"
+                                                  },
+                                                  {
+                                                     "code" : "seq",
+                                                     "value" : "3"
+                                                  }
+                                               ]
+                                            }
+                                         ]
+                                      },
+                                      {
+                                         "descriptor" : {
+                                            "name" : "Add On"
+                                         },
+                                         "id" : "626577",
+                                         "tags" : [
+                                            {
+                                               "code" : "type",
+                                               "list" : [
+                                                  {
+                                                     "code" : "type",
+                                                     "value" : "custom_group"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "config",
+                                               "list" : [
+                                                  {
+                                                     "code" : "min",
+                                                     "value" : "0"
+                                                  },
+                                                  {
+                                                     "code" : "max",
+                                                     "value" : "3"
+                                                  },
+                                                  {
+                                                     "code" : "input",
+                                                     "value" : "select"
+                                                  },
+                                                  {
+                                                     "code" : "seq",
+                                                     "value" : "7"
+                                                  }
+                                               ]
+                                            }
+                                         ]
+                                      }
+                                   ],
+                                   "descriptor" : {
+                                      "images" : [
+                                         "https://gfmarketing.s3.ap-south-1.amazonaws.com/logo/Online_Shoping_29.jpg"
+                                      ],
+                                      "long_desc" : "Falcons FoodCourt",
+                                      "name" : "Falcons FoodCourt",
+                                      "short_desc" : "Falcons FoodCourt",
+                                      "symbol" : "https://online-logo.s3-ap-southeast-1.amazonaws.com/ondc/4252/dbxua4yr939/restaurant/thumb_2023_07_28_16_50_58_NH8.png"
+                                   },
+                                   "fulfillments" : [
+                                      {
+                                         "contact" : {
+                                            "email" : "support@growthfalcons.com",
+                                            "phone" : "9008701804"
+                                         },
+                                         "id" : "F1",
+                                         "type" : "Delivery"
+                                      }
+                                   ],
+                                   "id" : "GFFBRTNH1691483763",
+                                   "items" : [
+                                      {
+                                         "@ondc/org/available_on_cod" : false,
+                                         "@ondc/org/cancellable" : false,
+                                         "@ondc/org/contact_details_consumer_care" : "Ganesh, connect@growthfalcons.com, +919008701804",
+                                         "@ondc/org/return_window" : "P1D",
+                                         "@ondc/org/returnable" : false,
+                                         "@ondc/org/seller_pickup_return" : false,
+                                         "@ondc/org/time_to_ship" : "PT45M",
+                                         "category_id" : "F&B",
+                                         "category_ids" : [
+                                            "3550991:1"
+                                         ],
+                                         "descriptor" : {
+                                            "images" : [
+                                               "https://food-image.s3.ap-south-1.amazonaws.com/fnb/superkings_thali.jpg"
+                                            ],
+                                            "long_desc" : "Dal Fry + Paneer Sabzi + Chana Masala + Veg Starter + Sweet + Raita + Salad + (2pcs) Phulka + (2pcs) Partha + Papad + Pickle + Butter Milk",
+                                            "name" : "The Indian Blues",
+                                            "short_desc" : "Dal Fry + Paneer Sabzi + Chana Masala + Veg Starter + Sweet + Raita + Salad + (2pcs) Phulka + (2pcs) Partha + Papad + Pickle + Butter Milk",
+                                            "symbol" : ""
+                                         },
+                                         "fulfillment_id" : "F1",
+                                         "id" : "2a5d31a6-5250-4d72-a556-177da141b305",
+                                         "location_id" : "GFFBRTNH1691483763",
+                                         "price" : {
+                                            "currency" : "INR",
+                                            "maximum_value" : "359.0",
+                                            "value" : "359.0"
+                                         },
+                                         "quantity" : {
+                                            "available" : {
+                                               "count" : "99"
+                                            },
+                                            "maximum" : {
+                                               "count" : "99"
+                                            },
+                                            "unitized" : {
+                                               "measure" : {
+                                                  "unit" : "unit",
+                                                  "value" : "1"
+                                               }
+                                            }
+                                         },
+                                         "tags" : [
+                                            {
+                                               "code" : "type",
+                                               "list" : [
+                                                  {
+                                                     "code" : "type",
+                                                     "value" : "item"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "veg_nonveg",
+                                               "list" : [
+                                                  {
+                                                     "code" : "veg",
+                                                     "value" : "yes"
+                                                  }
+                                               ]
+                                            }
+                                         ],
+                                         "time" : {
+                                            "label" : "enable",
+                                            "timestamp" : "2023-11-08T18:15:10.168Z"
+                                         }
+                                      },
+                                      {
+                                         "@ondc/org/available_on_cod" : false,
+                                         "@ondc/org/cancellable" : false,
+                                         "@ondc/org/contact_details_consumer_care" : "Ganesh, connect@growthfalcons.com, +919008701804",
+                                         "@ondc/org/return_window" : "P1D",
+                                         "@ondc/org/returnable" : false,
+                                         "@ondc/org/seller_pickup_return" : false,
+                                         "@ondc/org/time_to_ship" : "PT45M",
+                                         "category_id" : "F&B",
+                                         "category_ids" : [
+                                            "3550991:1"
+                                         ],
+                                         "descriptor" : {
+                                            "images" : [
+                                               "https://food-image.s3.ap-south-1.amazonaws.com/fnb/riders_rolls.jpg"
+                                            ],
+                                            "long_desc" : "Kolkata Overseas Rolls (1pc) Paneer Rolls  + (1pcs) Veg Rolls + Butter Milk",
+                                            "name" : "Boundary Meal",
+                                            "short_desc" : "Kolkata Overseas Rolls (1pc) Paneer Rolls  + (1pcs) Veg Rolls + Butter Milk",
+                                            "symbol" : ""
+                                         },
+                                         "fulfillment_id" : "F1",
+                                         "id" : "a7de87f6-b895-46ee-a69c-54e1d0be377f",
+                                         "location_id" : "GFFBRTNH1691483763",
+                                         "price" : {
+                                            "currency" : "INR",
+                                            "maximum_value" : "289.0",
+                                            "value" : "289.0"
+                                         },
+                                         "quantity" : {
+                                            "available" : {
+                                               "count" : "99"
+                                            },
+                                            "maximum" : {
+                                               "count" : "99"
+                                            },
+                                            "unitized" : {
+                                               "measure" : {
+                                                  "unit" : "unit",
+                                                  "value" : "1"
+                                               }
+                                            }
+                                         },
+                                         "tags" : [
+                                            {
+                                               "code" : "type",
+                                               "list" : [
+                                                  {
+                                                     "code" : "type",
+                                                     "value" : "item"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "veg_nonveg",
+                                               "list" : [
+                                                  {
+                                                     "code" : "veg",
+                                                     "value" : "yes"
+                                                  }
+                                               ]
+                                            }
+                                         ],
+                                         "time" : {
+                                            "label" : "enable",
+                                            "timestamp" : "2023-11-08T18:15:10.168Z"
+                                         }
+                                      },
+                                      {
+                                         "@ondc/org/available_on_cod" : false,
+                                         "@ondc/org/cancellable" : false,
+                                         "@ondc/org/contact_details_consumer_care" : "Ganesh, connect@growthfalcons.com, +919008701804",
+                                         "@ondc/org/return_window" : "P1D",
+                                         "@ondc/org/returnable" : false,
+                                         "@ondc/org/seller_pickup_return" : false,
+                                         "@ondc/org/time_to_ship" : "PT45M",
+                                         "category_id" : "F&B",
+                                         "category_ids" : [
+                                            "3550991:1"
+                                         ],
+                                         "descriptor" : {
+                                            "images" : [
+                                               "https://food-image.s3.ap-south-1.amazonaws.com/fnb/capital_street_combo.jpg"
+                                            ],
+                                            "long_desc" : "Delhi Ke Chole (300ml) +  (2pcs) Masala Kulcha Tawa + Mattha",
+                                            "name" : "Full Toss Combo",
+                                            "short_desc" : "Delhi Ke Chole (300ml) +  (2pcs) Masala Kulcha Tawa + Mattha",
+                                            "symbol" : ""
+                                         },
+                                         "fulfillment_id" : "F1",
+                                         "id" : "450937c6-d5ee-4287-9858-32d5547785d2",
+                                         "location_id" : "GFFBRTNH1691483763",
+                                         "price" : {
+                                            "currency" : "INR",
+                                            "maximum_value" : "269.0",
+                                            "value" : "269.0"
+                                         },
+                                         "quantity" : {
+                                            "available" : {
+                                               "count" : "99"
+                                            },
+                                            "maximum" : {
+                                               "count" : "99"
+                                            },
+                                            "unitized" : {
+                                               "measure" : {
+                                                  "unit" : "unit",
+                                                  "value" : "1"
+                                               }
+                                            }
+                                         },
+                                         "tags" : [
+                                            {
+                                               "code" : "type",
+                                               "list" : [
+                                                  {
+                                                     "code" : "type",
+                                                     "value" : "item"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "veg_nonveg",
+                                               "list" : [
+                                                  {
+                                                     "code" : "veg",
+                                                     "value" : "yes"
+                                                  }
+                                               ]
+                                            }
+                                         ],
+                                         "time" : {
+                                            "label" : "enable",
+                                            "timestamp" : "2023-11-08T18:15:10.168Z"
+                                         }
+                                      },
+                                      {
+                                         "@ondc/org/available_on_cod" : false,
+                                         "@ondc/org/cancellable" : false,
+                                         "@ondc/org/contact_details_consumer_care" : "Ganesh, connect@growthfalcons.com, +919008701804",
+                                         "@ondc/org/return_window" : "P1D",
+                                         "@ondc/org/returnable" : false,
+                                         "@ondc/org/seller_pickup_return" : false,
+                                         "@ondc/org/time_to_ship" : "PT45M",
+                                         "category_id" : "F&B",
+                                         "category_ids" : [
+                                            "2780298:1"
+                                         ],
+                                         "descriptor" : {
+                                            "images" : [
+                                               "https://food-image.s3.ap-south-1.amazonaws.com/fnb/sev_tamatar_-_500_ml.jpg"
+                                            ],
+                                            "long_desc" : "An Incredibly Humble Accompaniment, Made Using Juicy Tomatoes, Desi Masalas And Served With Heaps Of Besan Sev",
+                                            "name" : "Sev Tamatar [300 Ml]",
+                                            "short_desc" : "An Incredibly Humble Accompaniment, Made Using Juicy Tomatoes, Desi Masalas And Served With Heaps Of Besan Sev",
+                                            "symbol" : ""
+                                         },
+                                         "fulfillment_id" : "F1",
+                                         "id" : "426fb085-63e0-4d84-a3b7-9b3284bd9af7-VAR-1253694476",
+                                         "location_id" : "GFFBRTNH1691483763",
+                                         "price" : {
+                                            "currency" : "INR",
+                                            "maximum_value" : "179.00",
+                                            "value" : "179.00"
+                                         },
+                                         "quantity" : {
+                                            "available" : {
+                                               "count" : "99"
+                                            },
+                                            "maximum" : {
+                                               "count" : "99"
+                                            },
+                                            "unitized" : {
+                                               "measure" : {
+                                                  "unit" : "unit",
+                                                  "value" : "1"
+                                               }
+                                            }
+                                         },
+                                         "tags" : [
+                                            {
+                                               "code" : "type",
+                                               "list" : [
+                                                  {
+                                                     "code" : "type",
+                                                     "value" : "item"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "custom_group",
+                                               "list" : [
+                                                  {
+                                                     "code" : "id",
+                                                     "value" : "626575"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "veg_nonveg",
+                                               "list" : [
+                                                  {
+                                                     "code" : "veg",
+                                                     "value" : "yes"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "config",
+                                               "list" : [
+                                                  {
+                                                     "code" : "min",
+                                                     "value" : "0"
+                                                  },
+                                                  {
+                                                     "code" : "max",
+                                                     "value" : "3"
+                                                  },
+                                                  {
+                                                     "code" : "input",
+                                                     "value" : "select"
+                                                  },
+                                                  {
+                                                     "code" : "seq",
+                                                     "value" : "3"
+                                                  },
+                                                  {
+                                                     "code" : "id",
+                                                     "value" : "626575"
+                                                  }
+                                               ]
+                                            }
+                                         ],
+                                         "time" : {
+                                            "label" : "enable",
+                                            "timestamp" : "2023-11-08T18:15:10.168Z"
+                                         }
+                                      },
+                                      {
+                                         "@ondc/org/available_on_cod" : false,
+                                         "@ondc/org/cancellable" : false,
+                                         "@ondc/org/contact_details_consumer_care" : "Ganesh, connect@growthfalcons.com, +919008701804",
+                                         "@ondc/org/return_window" : "P1D",
+                                         "@ondc/org/returnable" : false,
+                                         "@ondc/org/seller_pickup_return" : false,
+                                         "@ondc/org/time_to_ship" : "PT45M",
+                                         "category_id" : "F&B",
+                                         "category_ids" : [
+                                            "2780298:1"
+                                         ],
+                                         "descriptor" : {
+                                            "images" : [
+                                               "https://food-image.s3.ap-south-1.amazonaws.com/fnb/sev_tamatar_-_500_ml.jpg"
+                                            ],
+                                            "long_desc" : "An Incredibly Humble Accompaniment, Made Using Juicy Tomatoes, Desi Masalas And Served With Heaps Of Besan Sev",
+                                            "name" : "Sev Tamatar [500 Ml]",
+                                            "short_desc" : "An Incredibly Humble Accompaniment, Made Using Juicy Tomatoes, Desi Masalas And Served With Heaps Of Besan Sev",
+                                            "symbol" : ""
+                                         },
+                                         "fulfillment_id" : "F1",
+                                         "id" : "426fb085-63e0-4d84-a3b7-9b3284bd9af7-VAR-1253694477",
+                                         "location_id" : "GFFBRTNH1691483763",
+                                         "price" : {
+                                            "currency" : "INR",
+                                            "maximum_value" : "269.00",
+                                            "value" : "269.00"
+                                         },
+                                         "quantity" : {
+                                            "available" : {
+                                               "count" : "99"
+                                            },
+                                            "maximum" : {
+                                               "count" : "99"
+                                            },
+                                            "unitized" : {
+                                               "measure" : {
+                                                  "unit" : "unit",
+                                                  "value" : "1"
+                                               }
+                                            }
+                                         },
+                                         "tags" : [
+                                            {
+                                               "code" : "type",
+                                               "list" : [
+                                                  {
+                                                     "code" : "type",
+                                                     "value" : "item"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "custom_group",
+                                               "list" : [
+                                                  {
+                                                     "code" : "id",
+                                                     "value" : "626575"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "veg_nonveg",
+                                               "list" : [
+                                                  {
+                                                     "code" : "veg",
+                                                     "value" : "yes"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "config",
+                                               "list" : [
+                                                  {
+                                                     "code" : "min",
+                                                     "value" : "0"
+                                                  },
+                                                  {
+                                                     "code" : "max",
+                                                     "value" : "3"
+                                                  },
+                                                  {
+                                                     "code" : "input",
+                                                     "value" : "select"
+                                                  },
+                                                  {
+                                                     "code" : "seq",
+                                                     "value" : "3"
+                                                  },
+                                                  {
+                                                     "code" : "id",
+                                                     "value" : "626575"
+                                                  }
+                                               ]
+                                            }
+                                         ],
+                                         "time" : {
+                                            "label" : "enable",
+                                            "timestamp" : "2023-11-08T18:15:10.168Z"
+                                         }
+                                      },
+                                      {
+                                         "@ondc/org/available_on_cod" : false,
+                                         "@ondc/org/cancellable" : false,
+                                         "@ondc/org/contact_details_consumer_care" : "Ganesh, connect@growthfalcons.com, +919008701804",
+                                         "@ondc/org/return_window" : "P1D",
+                                         "@ondc/org/returnable" : false,
+                                         "@ondc/org/seller_pickup_return" : false,
+                                         "@ondc/org/time_to_ship" : "PT45M",
+                                         "category_id" : "F&B",
+                                         "category_ids" : [
+                                            "2780298:1"
+                                         ],
+                                         "descriptor" : {
+                                            "images" : [
+                                               "https://food-image.s3.ap-south-1.amazonaws.com/fnb/paneer_pasanda_-_500_ml.jpg"
+                                            ],
+                                            "long_desc" : "A Rich And Delicious Recipe Of Shallow Fried Stuffed Paneer Sandwiches In A Smooth, Creamy Onion-Based Gravy",
+                                            "name" : "Paneer Pasanda [300 Ml]",
+                                            "short_desc" : "A Rich And Delicious Recipe Of Shallow Fried Stuffed Paneer Sandwiches In A Smooth, Creamy Onion-Based Gravy",
+                                            "symbol" : ""
+                                         },
+                                         "fulfillment_id" : "F1",
+                                         "id" : "a1a22252-31c5-4ded-859a-ea783f4b294a-VAR-1253694478",
+                                         "location_id" : "GFFBRTNH1691483763",
+                                         "price" : {
+                                            "currency" : "INR",
+                                            "maximum_value" : "199.00",
+                                            "value" : "199.00"
+                                         },
+                                         "quantity" : {
+                                            "available" : {
+                                               "count" : "99"
+                                            },
+                                            "maximum" : {
+                                               "count" : "99"
+                                            },
+                                            "unitized" : {
+                                               "measure" : {
+                                                  "unit" : "unit",
+                                                  "value" : "1"
+                                               }
+                                            }
+                                         },
+                                         "tags" : [
+                                            {
+                                               "code" : "type",
+                                               "list" : [
+                                                  {
+                                                     "code" : "type",
+                                                     "value" : "item"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "custom_group",
+                                               "list" : [
+                                                  {
+                                                     "code" : "id",
+                                                     "value" : "626575"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "veg_nonveg",
+                                               "list" : [
+                                                  {
+                                                     "code" : "veg",
+                                                     "value" : "yes"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "config",
+                                               "list" : [
+                                                  {
+                                                     "code" : "min",
+                                                     "value" : "0"
+                                                  },
+                                                  {
+                                                     "code" : "max",
+                                                     "value" : "3"
+                                                  },
+                                                  {
+                                                     "code" : "input",
+                                                     "value" : "select"
+                                                  },
+                                                  {
+                                                     "code" : "seq",
+                                                     "value" : "3"
+                                                  },
+                                                  {
+                                                     "code" : "id",
+                                                     "value" : "626575"
+                                                  }
+                                               ]
+                                            }
+                                         ],
+                                         "time" : {
+                                            "label" : "enable",
+                                            "timestamp" : "2023-11-08T18:15:10.169Z"
+                                         }
+                                      },
+                                      {
+                                         "@ondc/org/available_on_cod" : false,
+                                         "@ondc/org/cancellable" : false,
+                                         "@ondc/org/contact_details_consumer_care" : "Ganesh, connect@growthfalcons.com, +919008701804",
+                                         "@ondc/org/return_window" : "P1D",
+                                         "@ondc/org/returnable" : false,
+                                         "@ondc/org/seller_pickup_return" : false,
+                                         "@ondc/org/time_to_ship" : "PT45M",
+                                         "category_id" : "F&B",
+                                         "category_ids" : [
+                                            "2780298:1"
+                                         ],
+                                         "descriptor" : {
+                                            "images" : [
+                                               "https://food-image.s3.ap-south-1.amazonaws.com/fnb/paneer_pasanda_-_500_ml.jpg"
+                                            ],
+                                            "long_desc" : "A Rich And Delicious Recipe Of Shallow Fried Stuffed Paneer Sandwiches In A Smooth, Creamy Onion-Based Gravy",
+                                            "name" : "Paneer Pasanda [500 Ml]",
+                                            "short_desc" : "A Rich And Delicious Recipe Of Shallow Fried Stuffed Paneer Sandwiches In A Smooth, Creamy Onion-Based Gravy",
+                                            "symbol" : ""
+                                         },
+                                         "fulfillment_id" : "F1",
+                                         "id" : "a1a22252-31c5-4ded-859a-ea783f4b294a-VAR-1253694479",
+                                         "location_id" : "GFFBRTNH1691483763",
+                                         "price" : {
+                                            "currency" : "INR",
+                                            "maximum_value" : "299.00",
+                                            "value" : "299.00"
+                                         },
+                                         "quantity" : {
+                                            "available" : {
+                                               "count" : "99"
+                                            },
+                                            "maximum" : {
+                                               "count" : "99"
+                                            },
+                                            "unitized" : {
+                                               "measure" : {
+                                                  "unit" : "unit",
+                                                  "value" : "1"
+                                               }
+                                            }
+                                         },
+                                         "tags" : [
+                                            {
+                                               "code" : "type",
+                                               "list" : [
+                                                  {
+                                                     "code" : "type",
+                                                     "value" : "item"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "custom_group",
+                                               "list" : [
+                                                  {
+                                                     "code" : "id",
+                                                     "value" : "626575"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "veg_nonveg",
+                                               "list" : [
+                                                  {
+                                                     "code" : "veg",
+                                                     "value" : "yes"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "config",
+                                               "list" : [
+                                                  {
+                                                     "code" : "min",
+                                                     "value" : "0"
+                                                  },
+                                                  {
+                                                     "code" : "max",
+                                                     "value" : "3"
+                                                  },
+                                                  {
+                                                     "code" : "input",
+                                                     "value" : "select"
+                                                  },
+                                                  {
+                                                     "code" : "seq",
+                                                     "value" : "3"
+                                                  },
+                                                  {
+                                                     "code" : "id",
+                                                     "value" : "626575"
+                                                  }
+                                               ]
+                                            }
+                                         ],
+                                         "time" : {
+                                            "label" : "enable",
+                                            "timestamp" : "2023-11-08T18:15:10.169Z"
+                                         }
+                                      },
+                                      {
+                                         "@ondc/org/available_on_cod" : false,
+                                         "@ondc/org/cancellable" : false,
+                                         "@ondc/org/contact_details_consumer_care" : "Ganesh, connect@growthfalcons.com, +919008701804",
+                                         "@ondc/org/return_window" : "P1D",
+                                         "@ondc/org/returnable" : false,
+                                         "@ondc/org/seller_pickup_return" : false,
+                                         "@ondc/org/time_to_ship" : "PT45M",
+                                         "category_id" : "F&B",
+                                         "category_ids" : [
+                                            "2780298:1"
+                                         ],
+                                         "descriptor" : {
+                                            "images" : [
+                                               "https://food-image.s3.ap-south-1.amazonaws.com/fnb/lehsun_ki_chutney_-_500_ml.jpg"
+                                            ],
+                                            "long_desc" : "Originated From Rajasthan, Made From Garlic & Red Whole Chilies With A Pinch Of Cumin And Tamarind",
+                                            "name" : "Lehsun Ki Chutney [300 Ml]",
+                                            "short_desc" : "Originated From Rajasthan, Made From Garlic & Red Whole Chilies With A Pinch Of Cumin And Tamarind",
+                                            "symbol" : ""
+                                         },
+                                         "fulfillment_id" : "F1",
+                                         "id" : "3ed5e4c7-1b61-43e2-bcec-12bbca7c660d-VAR-1253694480",
+                                         "location_id" : "GFFBRTNH1691483763",
+                                         "price" : {
+                                            "currency" : "INR",
+                                            "maximum_value" : "209.00",
+                                            "value" : "209.00"
+                                         },
+                                         "quantity" : {
+                                            "available" : {
+                                               "count" : "99"
+                                            },
+                                            "maximum" : {
+                                               "count" : "99"
+                                            },
+                                            "unitized" : {
+                                               "measure" : {
+                                                  "unit" : "unit",
+                                                  "value" : "1"
+                                               }
+                                            }
+                                         },
+                                         "tags" : [
+                                            {
+                                               "code" : "type",
+                                               "list" : [
+                                                  {
+                                                     "code" : "type",
+                                                     "value" : "item"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "custom_group",
+                                               "list" : [
+                                                  {
+                                                     "code" : "id",
+                                                     "value" : "626575"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "veg_nonveg",
+                                               "list" : [
+                                                  {
+                                                     "code" : "veg",
+                                                     "value" : "yes"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "config",
+                                               "list" : [
+                                                  {
+                                                     "code" : "min",
+                                                     "value" : "0"
+                                                  },
+                                                  {
+                                                     "code" : "max",
+                                                     "value" : "3"
+                                                  },
+                                                  {
+                                                     "code" : "input",
+                                                     "value" : "select"
+                                                  },
+                                                  {
+                                                     "code" : "seq",
+                                                     "value" : "3"
+                                                  },
+                                                  {
+                                                     "code" : "id",
+                                                     "value" : "626575"
+                                                  }
+                                               ]
+                                            }
+                                         ],
+                                         "time" : {
+                                            "label" : "enable",
+                                            "timestamp" : "2023-11-08T18:15:10.169Z"
+                                         }
+                                      },
+                                      {
+                                         "@ondc/org/available_on_cod" : false,
+                                         "@ondc/org/cancellable" : false,
+                                         "@ondc/org/contact_details_consumer_care" : "Ganesh, connect@growthfalcons.com, +919008701804",
+                                         "@ondc/org/return_window" : "P1D",
+                                         "@ondc/org/returnable" : false,
+                                         "@ondc/org/seller_pickup_return" : false,
+                                         "@ondc/org/time_to_ship" : "PT45M",
+                                         "category_id" : "F&B",
+                                         "category_ids" : [
+                                            "2780298:1"
+                                         ],
+                                         "descriptor" : {
+                                            "images" : [
+                                               "https://food-image.s3.ap-south-1.amazonaws.com/fnb/lehsun_ki_chutney_-_500_ml.jpg"
+                                            ],
+                                            "long_desc" : "Originated From Rajasthan, Made From Garlic & Red Whole Chilies With A Pinch Of Cumin And Tamarind",
+                                            "name" : "Lehsun Ki Chutney [500 Ml]",
+                                            "short_desc" : "Originated From Rajasthan, Made From Garlic & Red Whole Chilies With A Pinch Of Cumin And Tamarind",
+                                            "symbol" : ""
+                                         },
+                                         "fulfillment_id" : "F1",
+                                         "id" : "3ed5e4c7-1b61-43e2-bcec-12bbca7c660d-VAR-1253694481",
+                                         "location_id" : "GFFBRTNH1691483763",
+                                         "price" : {
+                                            "currency" : "INR",
+                                            "maximum_value" : "320.00",
+                                            "value" : "320.00"
+                                         },
+                                         "quantity" : {
+                                            "available" : {
+                                               "count" : "99"
+                                            },
+                                            "maximum" : {
+                                               "count" : "99"
+                                            },
+                                            "unitized" : {
+                                               "measure" : {
+                                                  "unit" : "unit",
+                                                  "value" : "1"
+                                               }
+                                            }
+                                         },
+                                         "tags" : [
+                                            {
+                                               "code" : "type",
+                                               "list" : [
+                                                  {
+                                                     "code" : "type",
+                                                     "value" : "item"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "custom_group",
+                                               "list" : [
+                                                  {
+                                                     "code" : "id",
+                                                     "value" : "626575"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "veg_nonveg",
+                                               "list" : [
+                                                  {
+                                                     "code" : "veg",
+                                                     "value" : "yes"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "config",
+                                               "list" : [
+                                                  {
+                                                     "code" : "min",
+                                                     "value" : "0"
+                                                  },
+                                                  {
+                                                     "code" : "max",
+                                                     "value" : "3"
+                                                  },
+                                                  {
+                                                     "code" : "input",
+                                                     "value" : "select"
+                                                  },
+                                                  {
+                                                     "code" : "seq",
+                                                     "value" : "3"
+                                                  },
+                                                  {
+                                                     "code" : "id",
+                                                     "value" : "626575"
+                                                  }
+                                               ]
+                                            }
+                                         ],
+                                         "time" : {
+                                            "label" : "enable",
+                                            "timestamp" : "2023-11-08T18:15:10.169Z"
+                                         }
+                                      },
+                                      {
+                                         "@ondc/org/available_on_cod" : false,
+                                         "@ondc/org/cancellable" : false,
+                                         "@ondc/org/contact_details_consumer_care" : "Ganesh, connect@growthfalcons.com, +919008701804",
+                                         "@ondc/org/return_window" : "P1D",
+                                         "@ondc/org/returnable" : false,
+                                         "@ondc/org/seller_pickup_return" : false,
+                                         "@ondc/org/time_to_ship" : "PT45M",
+                                         "category_id" : "F&B",
+                                         "category_ids" : [
+                                            "2780296:1"
+                                         ],
+                                         "descriptor" : {
+                                            "images" : [
+                                               "https://food-image.s3.ap-south-1.amazonaws.com/fnb/nh8_maharaja_thali.jpg"
+                                            ],
+                                            "long_desc" : "1 Starter, (1pc) Bati, (2pcs) Tawa Parantha, (2pcs) Phulka, Rice, Paneer Gravy, Jaipuri Gatta, Panchmukhi Dal, (2pcs) Sweet,papad,Salad.",
+                                            "name" : "Nh8 Maharaja Thali",
+                                            "short_desc" : "1 Starter, (1pc) Bati, (2pcs) Tawa Parantha, (2pcs) Phulka, Rice, Paneer Gravy, Jaipuri Gatta, Panchmukhi Dal, (2pcs) Sweet,papad,Salad.",
+                                            "symbol" : ""
+                                         },
+                                         "fulfillment_id" : "F1",
+                                         "id" : "77236f77-3d00-4590-87b3-2ef075344570",
+                                         "location_id" : "GFFBRTNH1691483763",
+                                         "price" : {
+                                            "currency" : "INR",
+                                            "maximum_value" : "365.0",
+                                            "value" : "365.0"
+                                         },
+                                         "quantity" : {
+                                            "available" : {
+                                               "count" : "99"
+                                            },
+                                            "maximum" : {
+                                               "count" : "99"
+                                            },
+                                            "unitized" : {
+                                               "measure" : {
+                                                  "unit" : "unit",
+                                                  "value" : "1"
+                                               }
+                                            }
+                                         },
+                                         "tags" : [
+                                            {
+                                               "code" : "type",
+                                               "list" : [
+                                                  {
+                                                     "code" : "type",
+                                                     "value" : "item"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "custom_group",
+                                               "list" : [
+                                                  {
+                                                     "code" : "id",
+                                                     "value" : "626575"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "custom_group",
+                                               "list" : [
+                                                  {
+                                                     "code" : "id",
+                                                     "value" : "626577"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "veg_nonveg",
+                                               "list" : [
+                                                  {
+                                                     "code" : "veg",
+                                                     "value" : "yes"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "config",
+                                               "list" : [
+                                                  {
+                                                     "code" : "min",
+                                                     "value" : "0"
+                                                  },
+                                                  {
+                                                     "code" : "max",
+                                                     "value" : "3"
+                                                  },
+                                                  {
+                                                     "code" : "input",
+                                                     "value" : "select"
+                                                  },
+                                                  {
+                                                     "code" : "seq",
+                                                     "value" : "3"
+                                                  },
+                                                  {
+                                                     "code" : "id",
+                                                     "value" : "626575"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "config",
+                                               "list" : [
+                                                  {
+                                                     "code" : "min",
+                                                     "value" : "0"
+                                                  },
+                                                  {
+                                                     "code" : "max",
+                                                     "value" : "8"
+                                                  },
+                                                  {
+                                                     "code" : "input",
+                                                     "value" : "select"
+                                                  },
+                                                  {
+                                                     "code" : "seq",
+                                                     "value" : "7"
+                                                  },
+                                                  {
+                                                     "code" : "id",
+                                                     "value" : "626577"
+                                                  }
+                                               ]
+                                            }
+                                         ],
+                                         "time" : {
+                                            "label" : "enable",
+                                            "timestamp" : "2023-11-08T18:15:10.169Z"
+                                         }
+                                      },
+                                      {
+                                         "category_id" : "F&B",
+                                         "descriptor" : {
+                                            "name" : "Sweet Lassi"
+                                         },
+                                         "id" : "16010767",
+                                         "price" : {
+                                            "currency" : "INR",
+                                            "maximum_value" : "99.0",
+                                            "value" : "99.0"
+                                         },
+                                         "quantity" : {
+                                            "available" : {
+                                               "count" : "99"
+                                            },
+                                            "maximum" : {
+                                               "count" : "99"
+                                            }
+                                         },
+                                         "related" : true,
+                                         "tags" : [
+                                            {
+                                               "code" : "type",
+                                               "list" : [
+                                                  {
+                                                     "code" : "type",
+                                                     "value" : "customization"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "veg_nonveg",
+                                               "list" : [
+                                                  {
+                                                     "code" : "veg",
+                                                     "value" : "yes"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "parent",
+                                               "list" : [
+                                                  {
+                                                     "code" : "id",
+                                                     "value" : "626575"
+                                                  },
+                                                  {
+                                                     "code" : "default",
+                                                     "value" : "no"
+                                                  }
+                                               ]
+                                            }
+                                         ]
+                                      },
+                                      {
+                                         "category_id" : "F&B",
+                                         "descriptor" : {
+                                            "name" : "Salted Lassi"
+                                         },
+                                         "id" : "16010768",
+                                         "price" : {
+                                            "currency" : "INR",
+                                            "maximum_value" : "99.0",
+                                            "value" : "99.0"
+                                         },
+                                         "quantity" : {
+                                            "available" : {
+                                               "count" : "99"
+                                            },
+                                            "maximum" : {
+                                               "count" : "99"
+                                            }
+                                         },
+                                         "related" : true,
+                                         "tags" : [
+                                            {
+                                               "code" : "type",
+                                               "list" : [
+                                                  {
+                                                     "code" : "type",
+                                                     "value" : "customization"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "veg_nonveg",
+                                               "list" : [
+                                                  {
+                                                     "code" : "veg",
+                                                     "value" : "yes"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "parent",
+                                               "list" : [
+                                                  {
+                                                     "code" : "id",
+                                                     "value" : "626575"
+                                                  },
+                                                  {
+                                                     "code" : "default",
+                                                     "value" : "no"
+                                                  }
+                                               ]
+                                            }
+                                         ]
+                                      },
+                                      {
+                                         "category_id" : "F&B",
+                                         "descriptor" : {
+                                            "name" : "Butter Milk (mattha)"
+                                         },
+                                         "id" : "16010769",
+                                         "price" : {
+                                            "currency" : "INR",
+                                            "maximum_value" : "69.0",
+                                            "value" : "69.0"
+                                         },
+                                         "quantity" : {
+                                            "available" : {
+                                               "count" : "99"
+                                            },
+                                            "maximum" : {
+                                               "count" : "99"
+                                            }
+                                         },
+                                         "related" : true,
+                                         "tags" : [
+                                            {
+                                               "code" : "type",
+                                               "list" : [
+                                                  {
+                                                     "code" : "type",
+                                                     "value" : "customization"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "veg_nonveg",
+                                               "list" : [
+                                                  {
+                                                     "code" : "veg",
+                                                     "value" : "yes"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "parent",
+                                               "list" : [
+                                                  {
+                                                     "code" : "id",
+                                                     "value" : "626575"
+                                                  },
+                                                  {
+                                                     "code" : "default",
+                                                     "value" : "no"
+                                                  }
+                                               ]
+                                            }
+                                         ]
+                                      },
+                                      {
+                                         "category_id" : "F&B",
+                                         "descriptor" : {
+                                            "name" : "Kesar Pista Kulfi"
+                                         },
+                                         "id" : "20777355",
+                                         "price" : {
+                                            "currency" : "INR",
+                                            "maximum_value" : "85.0",
+                                            "value" : "85.0"
+                                         },
+                                         "quantity" : {
+                                            "available" : {
+                                               "count" : "99"
+                                            },
+                                            "maximum" : {
+                                               "count" : "99"
+                                            }
+                                         },
+                                         "related" : true,
+                                         "tags" : [
+                                            {
+                                               "code" : "type",
+                                               "list" : [
+                                                  {
+                                                     "code" : "type",
+                                                     "value" : "customization"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "veg_nonveg",
+                                               "list" : [
+                                                  {
+                                                     "code" : "veg",
+                                                     "value" : "yes"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "parent",
+                                               "list" : [
+                                                  {
+                                                     "code" : "id",
+                                                     "value" : "626575"
+                                                  },
+                                                  {
+                                                     "code" : "default",
+                                                     "value" : "no"
+                                                  }
+                                               ]
+                                            }
+                                         ]
+                                      },
+                                      {
+                                         "category_id" : "F&B",
+                                         "descriptor" : {
+                                            "name" : "Laccha Rabri Kulfi"
+                                         },
+                                         "id" : "20777356",
+                                         "price" : {
+                                            "currency" : "INR",
+                                            "maximum_value" : "85.0",
+                                            "value" : "85.0"
+                                         },
+                                         "quantity" : {
+                                            "available" : {
+                                               "count" : "99"
+                                            },
+                                            "maximum" : {
+                                               "count" : "99"
+                                            }
+                                         },
+                                         "related" : true,
+                                         "tags" : [
+                                            {
+                                               "code" : "type",
+                                               "list" : [
+                                                  {
+                                                     "code" : "type",
+                                                     "value" : "customization"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "veg_nonveg",
+                                               "list" : [
+                                                  {
+                                                     "code" : "veg",
+                                                     "value" : "yes"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "parent",
+                                               "list" : [
+                                                  {
+                                                     "code" : "id",
+                                                     "value" : "626575"
+                                                  },
+                                                  {
+                                                     "code" : "default",
+                                                     "value" : "no"
+                                                  }
+                                               ]
+                                            }
+                                         ]
+                                      },
+                                      {
+                                         "category_id" : "F&B",
+                                         "descriptor" : {
+                                            "name" : "Paan Bahar Kulfi"
+                                         },
+                                         "id" : "20777357",
+                                         "price" : {
+                                            "currency" : "INR",
+                                            "maximum_value" : "85.0",
+                                            "value" : "85.0"
+                                         },
+                                         "quantity" : {
+                                            "available" : {
+                                               "count" : "99"
+                                            },
+                                            "maximum" : {
+                                               "count" : "99"
+                                            }
+                                         },
+                                         "related" : true,
+                                         "tags" : [
+                                            {
+                                               "code" : "type",
+                                               "list" : [
+                                                  {
+                                                     "code" : "type",
+                                                     "value" : "customization"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "veg_nonveg",
+                                               "list" : [
+                                                  {
+                                                     "code" : "veg",
+                                                     "value" : "yes"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "parent",
+                                               "list" : [
+                                                  {
+                                                     "code" : "id",
+                                                     "value" : "626575"
+                                                  },
+                                                  {
+                                                     "code" : "default",
+                                                     "value" : "no"
+                                                  }
+                                               ]
+                                            }
+                                         ]
+                                      },
+                                      {
+                                         "category_id" : "F&B",
+                                         "descriptor" : {
+                                            "name" : "Chenna Dry Fruit Kulfi"
+                                         },
+                                         "id" : "20777358",
+                                         "price" : {
+                                            "currency" : "INR",
+                                            "maximum_value" : "95.0",
+                                            "value" : "95.0"
+                                         },
+                                         "quantity" : {
+                                            "available" : {
+                                               "count" : "99"
+                                            },
+                                            "maximum" : {
+                                               "count" : "99"
+                                            }
+                                         },
+                                         "related" : true,
+                                         "tags" : [
+                                            {
+                                               "code" : "type",
+                                               "list" : [
+                                                  {
+                                                     "code" : "type",
+                                                     "value" : "customization"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "veg_nonveg",
+                                               "list" : [
+                                                  {
+                                                     "code" : "veg",
+                                                     "value" : "yes"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "parent",
+                                               "list" : [
+                                                  {
+                                                     "code" : "id",
+                                                     "value" : "626575"
+                                                  },
+                                                  {
+                                                     "code" : "default",
+                                                     "value" : "no"
+                                                  }
+                                               ]
+                                            }
+                                         ]
+                                      },
+                                      {
+                                         "category_id" : "F&B",
+                                         "descriptor" : {
+                                            "name" : "Gulab Jamun - 2 Piece"
+                                         },
+                                         "id" : "16010775",
+                                         "price" : {
+                                            "currency" : "INR",
+                                            "maximum_value" : "79.0",
+                                            "value" : "79.0"
+                                         },
+                                         "quantity" : {
+                                            "available" : {
+                                               "count" : "99"
+                                            },
+                                            "maximum" : {
+                                               "count" : "99"
+                                            }
+                                         },
+                                         "related" : true,
+                                         "tags" : [
+                                            {
+                                               "code" : "type",
+                                               "list" : [
+                                                  {
+                                                     "code" : "type",
+                                                     "value" : "customization"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "veg_nonveg",
+                                               "list" : [
+                                                  {
+                                                     "code" : "veg",
+                                                     "value" : "yes"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "parent",
+                                               "list" : [
+                                                  {
+                                                     "code" : "id",
+                                                     "value" : "626577"
+                                                  },
+                                                  {
+                                                     "code" : "default",
+                                                     "value" : "no"
+                                                  }
+                                               ]
+                                            }
+                                         ]
+                                      },
+                                      {
+                                         "category_id" : "F&B",
+                                         "descriptor" : {
+                                            "name" : "Moong Dal Halwa - 100 GM"
+                                         },
+                                         "id" : "16010776",
+                                         "price" : {
+                                            "currency" : "INR",
+                                            "maximum_value" : "119.0",
+                                            "value" : "119.0"
+                                         },
+                                         "quantity" : {
+                                            "available" : {
+                                               "count" : "99"
+                                            },
+                                            "maximum" : {
+                                               "count" : "99"
+                                            }
+                                         },
+                                         "related" : true,
+                                         "tags" : [
+                                            {
+                                               "code" : "type",
+                                               "list" : [
+                                                  {
+                                                     "code" : "type",
+                                                     "value" : "customization"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "veg_nonveg",
+                                               "list" : [
+                                                  {
+                                                     "code" : "veg",
+                                                     "value" : "yes"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "parent",
+                                               "list" : [
+                                                  {
+                                                     "code" : "id",
+                                                     "value" : "626577"
+                                                  },
+                                                  {
+                                                     "code" : "default",
+                                                     "value" : "no"
+                                                  }
+                                               ]
+                                            }
+                                         ]
+                                      },
+                                      {
+                                         "category_id" : "F&B",
+                                         "descriptor" : {
+                                            "name" : "Sweet Lassi"
+                                         },
+                                         "id" : "16010777",
+                                         "price" : {
+                                            "currency" : "INR",
+                                            "maximum_value" : "99.0",
+                                            "value" : "99.0"
+                                         },
+                                         "quantity" : {
+                                            "available" : {
+                                               "count" : "99"
+                                            },
+                                            "maximum" : {
+                                               "count" : "99"
+                                            }
+                                         },
+                                         "related" : true,
+                                         "tags" : [
+                                            {
+                                               "code" : "type",
+                                               "list" : [
+                                                  {
+                                                     "code" : "type",
+                                                     "value" : "customization"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "veg_nonveg",
+                                               "list" : [
+                                                  {
+                                                     "code" : "veg",
+                                                     "value" : "yes"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "parent",
+                                               "list" : [
+                                                  {
+                                                     "code" : "id",
+                                                     "value" : "626577"
+                                                  },
+                                                  {
+                                                     "code" : "default",
+                                                     "value" : "no"
+                                                  }
+                                               ]
+                                            }
+                                         ]
+                                      },
+                                      {
+                                         "category_id" : "F&B",
+                                         "descriptor" : {
+                                            "name" : "Salted Lassi"
+                                         },
+                                         "id" : "16010778",
+                                         "price" : {
+                                            "currency" : "INR",
+                                            "maximum_value" : "99.0",
+                                            "value" : "99.0"
+                                         },
+                                         "quantity" : {
+                                            "available" : {
+                                               "count" : "99"
+                                            },
+                                            "maximum" : {
+                                               "count" : "99"
+                                            }
+                                         },
+                                         "related" : true,
+                                         "tags" : [
+                                            {
+                                               "code" : "type",
+                                               "list" : [
+                                                  {
+                                                     "code" : "type",
+                                                     "value" : "customization"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "veg_nonveg",
+                                               "list" : [
+                                                  {
+                                                     "code" : "veg",
+                                                     "value" : "yes"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "parent",
+                                               "list" : [
+                                                  {
+                                                     "code" : "id",
+                                                     "value" : "626577"
+                                                  },
+                                                  {
+                                                     "code" : "default",
+                                                     "value" : "no"
+                                                  }
+                                               ]
+                                            }
+                                         ]
+                                      },
+                                      {
+                                         "category_id" : "F&B",
+                                         "descriptor" : {
+                                            "name" : "Jaljeera"
+                                         },
+                                         "id" : "16010779",
+                                         "price" : {
+                                            "currency" : "INR",
+                                            "maximum_value" : "79.0",
+                                            "value" : "79.0"
+                                         },
+                                         "quantity" : {
+                                            "available" : {
+                                               "count" : "99"
+                                            },
+                                            "maximum" : {
+                                               "count" : "99"
+                                            }
+                                         },
+                                         "related" : true,
+                                         "tags" : [
+                                            {
+                                               "code" : "type",
+                                               "list" : [
+                                                  {
+                                                     "code" : "type",
+                                                     "value" : "customization"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "veg_nonveg",
+                                               "list" : [
+                                                  {
+                                                     "code" : "veg",
+                                                     "value" : "yes"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "parent",
+                                               "list" : [
+                                                  {
+                                                     "code" : "id",
+                                                     "value" : "626577"
+                                                  },
+                                                  {
+                                                     "code" : "default",
+                                                     "value" : "no"
+                                                  }
+                                               ]
+                                            }
+                                         ]
+                                      },
+                                      {
+                                         "category_id" : "F&B",
+                                         "descriptor" : {
+                                            "name" : "Boondi Chaas"
+                                         },
+                                         "id" : "16010780",
+                                         "price" : {
+                                            "currency" : "INR",
+                                            "maximum_value" : "79.0",
+                                            "value" : "79.0"
+                                         },
+                                         "quantity" : {
+                                            "available" : {
+                                               "count" : "99"
+                                            },
+                                            "maximum" : {
+                                               "count" : "99"
+                                            }
+                                         },
+                                         "related" : true,
+                                         "tags" : [
+                                            {
+                                               "code" : "type",
+                                               "list" : [
+                                                  {
+                                                     "code" : "type",
+                                                     "value" : "customization"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "veg_nonveg",
+                                               "list" : [
+                                                  {
+                                                     "code" : "veg",
+                                                     "value" : "yes"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "parent",
+                                               "list" : [
+                                                  {
+                                                     "code" : "id",
+                                                     "value" : "626577"
+                                                  },
+                                                  {
+                                                     "code" : "default",
+                                                     "value" : "no"
+                                                  }
+                                               ]
+                                            }
+                                         ]
+                                      },
+                                      {
+                                         "category_id" : "F&B",
+                                         "descriptor" : {
+                                            "name" : "Pudina Chaas"
+                                         },
+                                         "id" : "16010781",
+                                         "price" : {
+                                            "currency" : "INR",
+                                            "maximum_value" : "79.0",
+                                            "value" : "79.0"
+                                         },
+                                         "quantity" : {
+                                            "available" : {
+                                               "count" : "99"
+                                            },
+                                            "maximum" : {
+                                               "count" : "99"
+                                            }
+                                         },
+                                         "related" : true,
+                                         "tags" : [
+                                            {
+                                               "code" : "type",
+                                               "list" : [
+                                                  {
+                                                     "code" : "type",
+                                                     "value" : "customization"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "veg_nonveg",
+                                               "list" : [
+                                                  {
+                                                     "code" : "veg",
+                                                     "value" : "yes"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "parent",
+                                               "list" : [
+                                                  {
+                                                     "code" : "id",
+                                                     "value" : "626577"
+                                                  },
+                                                  {
+                                                     "code" : "default",
+                                                     "value" : "no"
+                                                  }
+                                               ]
+                                            }
+                                         ]
+                                      },
+                                      {
+                                         "category_id" : "F&B",
+                                         "descriptor" : {
+                                            "name" : "Salted Chaas"
+                                         },
+                                         "id" : "16010782",
+                                         "price" : {
+                                            "currency" : "INR",
+                                            "maximum_value" : "79.0",
+                                            "value" : "79.0"
+                                         },
+                                         "quantity" : {
+                                            "available" : {
+                                               "count" : "99"
+                                            },
+                                            "maximum" : {
+                                               "count" : "99"
+                                            }
+                                         },
+                                         "related" : true,
+                                         "tags" : [
+                                            {
+                                               "code" : "type",
+                                               "list" : [
+                                                  {
+                                                     "code" : "type",
+                                                     "value" : "customization"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "veg_nonveg",
+                                               "list" : [
+                                                  {
+                                                     "code" : "veg",
+                                                     "value" : "yes"
+                                                  }
+                                               ]
+                                            },
+                                            {
+                                               "code" : "parent",
+                                               "list" : [
+                                                  {
+                                                     "code" : "id",
+                                                     "value" : "626577"
+                                                  },
+                                                  {
+                                                     "code" : "default",
+                                                     "value" : "no"
+                                                  }
+                                               ]
+                                            }
+                                         ]
+                                      }
+                                   ],
+                                   "locations" : [
+                                      {
+                                         "address" : {
+                                            "area_code" : "560037",
+                                            "city" : "Bengaluru",
+                                            "locality" : "Brookfield",
+                                            "state" : "Karnataka",
+                                            "street" : "Brookefield Mall, 306, 3rd Floor, Brookefield, Bengaluru, Karnataka 560037"
+                                         },
+                                         "circle" : {
+                                            "gps" : "12.966036, 77.717866",
+                                            "radius" : {
+                                               "unit" : "km",
+                                               "value" : "6"
+                                            }
+                                         },
+                                         "gps" : "12.966036, 77.717866",
+                                         "id" : "GFFBRTNH1691483763",
+                                         "time" : {
+                                            "days" : "1,2,3,4,5,6,7",
+                                            "label" : "enable",
+                                            "schedule" : {
+                                               "frequency" : "PT5H0M",
+                                               "holidays" : [],
+                                               "times" : [
+                                                  "1100",
+                                                  "1800"
+                                               ]
+                                            },
+                                            "timestamp" : "2023-11-08T18:15:09.410Z"
+                                         }
+                                      }
+                                   ],
+                                   "tags" : [
+                                      {
+                                         "code" : "timing",
+                                         "list" : [
+                                            {
+                                               "code" : "type",
+                                               "value" : "Order"
+                                            },
+                                            {
+                                               "code" : "location",
+                                               "value" : "L1"
+                                            },
+                                            {
+                                               "code" : "day_from",
+                                               "value" : "1"
+                                            },
+                                            {
+                                               "code" : "day_to",
+                                               "value" : "7"
+                                            },
+                                            {
+                                               "code" : "time_from",
+                                               "value" : "1100"
+                                            },
+                                            {
+                                               "code" : "time_to",
+                                               "value" : "1600"
+                                            }
+                                         ]
+                                      },
+                                      {
+                                         "code" : "timing",
+                                         "list" : [
+                                            {
+                                               "code" : "type",
+                                               "value" : "Order"
+                                            },
+                                            {
+                                               "code" : "location",
+                                               "value" : "L1"
+                                            },
+                                            {
+                                               "code" : "day_from",
+                                               "value" : "1"
+                                            },
+                                            {
+                                               "code" : "day_to",
+                                               "value" : "7"
+                                            },
+                                            {
+                                               "code" : "time_from",
+                                               "value" : "1800"
+                                            },
+                                            {
+                                               "code" : "time_to",
+                                               "value" : "2300"
+                                            }
+                                         ]
+                                      },
+                                      {
+                                         "code" : "serviceability",
+                                         "list" : [
+                                            {
+                                               "code" : "location",
+                                               "value" : "GFFBRTNH1691483763"
+                                            },
+                                            {
+                                               "code" : "category",
+                                               "value" : "F&B"
+                                            },
+                                            {
+                                               "code" : "type",
+                                               "value" : "10"
+                                            },
+                                            {
+                                               "code" : "val",
+                                               "value" : "6"
+                                            },
+                                            {
+                                               "code" : "unit",
+                                               "value" : "km"
+                                            }
+                                         ]
+                                      }
+                                   ],
+                                   "time" : {
+                                      "label" : "enable",
+                                      "timestamp" : "2023-11-08T18:15:09.410Z"
+                                   },
+                                   "ttl" : "PT6H"
+                                },
+                                {
+                                   "descriptor" : {
+                                      "images" : [
+                                         "https://gfmarketing.s3.ap-south-1.amazonaws.com/logo/Online_Shoping_29.jpg"
+                                      ],
+                                      "long_desc" : "Jain Kitchen, Pure Vegetarian Restaurant",
+                                      "name" : "Jain Kitchen, Pure Vegetarian Restaurant",
+                                      "short_desc" : "Jain Kitchen, Pure Vegetarian Restaurant",
+                                      "symbol" : "https://online-logo.s3-ap-southeast-1.amazonaws.com/ondc/27519/k68094oi/restaurant/thumb_2023_05_20_12_57_55_Logo.JPG"
+                                   },
+                                   "id" : "GFFBRTJA1685608135",
+                                   "time" : {
+                                      "label" : "close",
+                                      "timestamp" : "2023-11-08T18:15:09.410Z"
+                                   }
+                                }
+                             ]
+                          }
+                       }
+                    }]
+            },
+            "assertion": {
+                "and": [
+                    {
+                        "script": {
+                            "eval": "search.response.data[0].message.catalog['bpp/providers'].length > 1 && search.response.data[0].message.catalog['bpp/providers'].filter(function(p){ return p.time.label === 'enable'})[0].items.length > 5",
+                            "message": "Atleast 5 Items in Catalog"
+                        }
+                    }
+                ]
+            },
+            "logs": [
+                {
+                    "name": "search_full_catalog_refresh.log",
+                    "value": "${JSON.stringify(search.request.body)}"
+                },
+                {
+                    "name": "on_search_full_catalog_refresh.log",
+                    "value": "${JSON.stringify(search.response.data[0])}"
+                }
+            ]
+        },
+        {
+            "name": "ondc_validator",
+            "request": {
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "body": {
+                    "domain": "${context.domain}",
+                    "version": "${context.core_version}"
+                },
+                "method": "post",
+                "timeout": 60,
+                "url": "https://log-validation.ondc.org/api/validate"
+            },
+            "request_finalizer": "request.body.payload = {\"search_full_catalog_refresh\" : search.request.body, \"on_search_full_catalog_refresh\"  : search.response.data[0] }",
+            "assertion": {
+                "script": {
+                    "eval": "Object.keys(ondc_validator.response.data).length === 0"
+                }
+            },
+            "logs": [
+                {
+                    "name": "ondcvalidator.log",
+                    "value": "${JSON.stringify(ondc_validator.response.data)}"
+                },
+                {
+                    "name": "ondcvalidator_payload.json",
+                    "value": "${JSON.stringify(ondc_validator.request.body)}"
+                }
+            ]
+        }
+    ]
+}

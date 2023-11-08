@@ -81,7 +81,7 @@
                         "action": "search",
                         "bap_id": "${context.bap_id}",
                         "bap_uri": "${context.bap_uri}",
-                        "ttl": "${context.ttl}",
+                        "ttl": "${context.ttl}"
                     },
                     "message": {
                         "intent": {
@@ -172,13 +172,13 @@
             "request_finalizer": "request.body.payload = {\"search_full_catalog_refresh\" : search.request.body, \"on_search_full_catalog_refresh\"  : search.response.data[0] , \"search_inc_refresh\" : search_inc.request.body , \"on_search_inc_refresh\" : search_inc.response.data[0] }",
             "assertion": {
                 "script": {
-                    "eval": "Object.keys(ondc_validator.response.error).length === 0"
+                    "eval": "Object.keys(ondc_validator.response.data).length === 0"
                 }
             },
             "logs": [
                 {
                     "name": "ondcvalidator.log",
-                    "value": "${JSON.stringify(ondc_validator.response)}"
+                    "value": "${JSON.stringify(ondc_validator.response.data)}"
                 },
                 {
                     "name": "ondcvalidator_payload.json",
