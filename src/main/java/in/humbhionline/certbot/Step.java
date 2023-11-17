@@ -2,6 +2,7 @@ package in.humbhionline.certbot;
 
 import com.venky.core.io.ByteArrayInputStream;
 import com.venky.core.string.StringUtil;
+import com.venky.core.util.ObjectUtil;
 import in.humbhionline.certbot.Request.HttpMethod;
 import in.succinct.json.JSONAwareWrapper;
 import in.succinct.json.JSONObjectWrapper;
@@ -51,6 +52,7 @@ public class Step extends JSONObjectWrapper {
 
     public void execute(TestCase testCase){
         String flow = getFlow();
+        TestRunner.loadEnv(testCase.getVariables());
         if (flow != null) {
             finalizeAttribute("flow",testCase);
             executeSubFlow(testCase,getFlow());
@@ -72,32 +74,43 @@ public class Step extends JSONObjectWrapper {
 
     @SuppressWarnings("ALL")
     public void executeRequest(TestCase testCase) {
+        StringBuilder fakeCurl = new StringBuilder("\ncurl " );
         finalizeAttribute("request",testCase);
         StringBuilder url = new StringBuilder();
         url.append(getRequest().getUrl());
         Builder builder = HttpRequest.newBuilder(URI.create(url.toString()));
+
 
         if (getRequest().getHeaders() == null) {
             getRequest().setHeaders(new Headers());
         }
         JSONObject o = getRequest().getHeaders().getInner();
         o.forEach((k, v) -> {
+            fakeCurl.append(String.format(" -H '%s:%s'",StringUtil.valueOf(k), StringUtil.valueOf(v)));
             builder.header(StringUtil.valueOf(k), StringUtil.valueOf(v));
         });
         builder.timeout(Duration.ofSeconds(getRequest().getTimeout()));
+        builder.setHeader("Accept-Encoding", "gzip");
+        builder.setHeader("Accept", "application/json");
+        fakeCurl.append(" -H 'Accept-Encoding:gzip' ");
+        fakeCurl.append(" -H 'Accept:application/json' ");
 
+
+        fakeCurl.append(" '").append(url).append("' ");
         if (getRequest().getHttpMethod() == HttpMethod.get) {
             builder.GET();
         }else {
+            fakeCurl.append(" -d '").append(getRequest().getBody().toString()).append("'");
             builder.method(getRequest().getHttpMethod().toString().toUpperCase(),BodyPublishers.ofString(getRequest().getBody().toString()));
         }
 
-        builder.setHeader("Accept-Encoding", "gzip");
 
         builder.version(Version.HTTP_2);
+        fakeCurl.append(" --http2 ");
 
         HttpRequest request = builder.build();
         try {
+            Logger.getInstance().log(fakeCurl.toString());
             Response r = getResponse();
             if (r == null){
                 HttpResponse<InputStream> response = getHttpClient().send(request, BodyHandlers.ofInputStream());
@@ -125,7 +138,7 @@ public class Step extends JSONObjectWrapper {
                 }
 
                 JSONArray content_type = r.getHeaders().get("CONTENT-TYPE");
-                if (content_type != null && ((String)content_type.get(0)).contains("application/json")) {
+                if (content_type != null && ((String)content_type.get(0)).contains("application/json") && !ObjectUtil.isVoid(dataOnThewire)) {
                     r.set(mainAttribute, (JSONAware) JSONValue.parseWithException(dataOnThewire));
                 }else {
                     r.set(mainAttribute,dataOnThewire);

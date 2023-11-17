@@ -9,13 +9,56 @@
         "bap_uri" : "https://certbot-preprod.humbhionline.in/bap",
         "ttl" : "PT30S"
     },
+
     "authorization" : {
         "basic" : "Basic ..."
     },
     "sync_bap_url" : "https://certbot-preprod.humbhionline.in/bap/api/bg",
+    "bap" : { 
+        "payment": {
+            "@ondc/org/buyer_app_finder_fee_amount": "3",
+            "@ondc/org/buyer_app_finder_fee_type": "percent"
+        }
+    },
     "bpp" : {
-        "item_deactivating_flow" : "./src/test/resources/preprod-wiggles.humbhionline.in/deactivate_item.json" ,
-        "item_activating_flow" : "./src/test/resources/preprod-wiggles.humbhionline.in/activate_item.json",
-        "x_api_key": "..."
+        "flow" : {
+            "deactivate_item" : "./src/test/resources/preprod-wiggles.humbhionline.in/deactivate_item.json" ,
+            "activate_item" : "./src/test/resources/preprod-wiggles.humbhionline.in/activate_item.json" ,
+            "status_updates" : "./src/test/resources/preprod-wiggles.humbhionline.in/status_updates.json"
+        },
+        "x_api_key": "...",
+        "provider" : {
+           "id" : "preprod-wiggles.humbhionline.in",
+           "locations" : [{ "id" : "./local_retail/ind/80777412902@preprod-wiggles.humbhionline.in.provider_location" } ]
+        },
+        "fulfillment": {
+            "end": { 
+                "contact" : {
+                     "email" : "venkyspam1971@gmail.com",
+                     "phone" : "9845114558"
+                },
+                "location" : {
+                    "address" : {
+                       "name" : "Pride Apartments" ,
+                       "door" : "302",
+                       "building" : "A Block",
+                       "street" : "Bannergatta Road", 
+                       "locality" : "Billekahalli",
+                       "city" : "Bengaluru",
+                       "state" : "Karnataka",
+                       "country" : "IND",
+                       "area_code" : "560076"
+                     },
+                     "gps" : "12.898463,77.600873"
+                },
+                "person" : { 
+                    "name" : "Venky Mahadevan"
+                }
+
+            },
+            "type": "Delivery"
+
+        }
     }
+
 }

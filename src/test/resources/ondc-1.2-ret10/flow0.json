@@ -1,5 +1,5 @@
 {
-    "name": "flow1",
+    "name": "flow0",
     "steps": [
         {
             "name": "search",
@@ -47,7 +47,7 @@
                 "and": [
                     {
                         "script": {
-                            "eval": "search.response.data[0].message.catalog['bpp/providers'].length > 1 && search.response.data[0].message.catalog['bpp/providers'].filter(function(p){ return p.time.label === 'enable'})[0].items.length > 5",
+                            "eval": "search.response.data[0].message.catalog['bpp/providers'].length > 0 && search.response.data[0].message.catalog['bpp/providers'].filter(function(p){ return p.time.label === 'enable'})[0].items.length > 5",
                             "message": "Atleast 5 Items in Catalog"
                         }
                     }

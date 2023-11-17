@@ -66,7 +66,7 @@
         },
         {
             "name" : "custom_bpp_item_deactivate" ,
-            "flow" : "${bpp.item_deactivating_flow}"
+            "flow" : "${bpp.flow.deactivate_item}"
         },
         {
             "name": "search_inc",
@@ -153,7 +153,7 @@
         },
         {
             "name" : "custom_bpp_item_activate" ,
-            "flow" : "${bpp.item_activating_flow}"
+            "flow" : "${bpp.flow.activate_item}"
         },
         {
             "name": "ondc_validator",

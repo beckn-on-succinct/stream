@@ -24,7 +24,7 @@
                 "url" : "https://preprod-wiggles.humbhionline.in/items/save",
                 "method" : "post",
                 "headers": {
-                    "X-ApiKey" : "${bpp.x_api_key}"
+                    "X-ApiKey" : "${bpp.x_api_key}",
                     "Content-Type" : "application/json"
                 },
                 "body" : {

@@ -14,10 +14,10 @@ import org.json.simple.JSONValue;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Map.Entry;
 import java.util.TimeZone;
 
 public class TestRunner {
@@ -65,13 +65,20 @@ public class TestRunner {
 
     }
 
-    private static void loadEnv(Variables variables) {
-        Env env = new Env() ;
+    public static void loadEnv(Variables variables) {
+        Env env = variables.getEnv();
+        if (env == null ) {
+            env = new Env();
+            variables.setEnv(env);
+            for (Entry<Object, Object> entry : System.getProperties().entrySet()) {
+                Object k = entry.getKey();
+                Object v = entry.getValue();
+                env.set((String) k, (String) v);
+            }
+        }
         env.setToday( new Date());
         env.setNow(new Date());
 
-        System.getProperties().forEach((k,v)->env.set((String)k,(String)v));
-        variables.setEnv(env);
     }
     public static class Env extends JSONObjectWrapper {
         public Date getNow(){
