@@ -29,7 +29,7 @@
         },
         {
             "name": "updateInvoiceUrl",
-            "request_finalizer": [
+            "request_finalizer" : [
                 "var d = new Date(); m = 3 * Math.floor(d.getMonth()/3) + 1 ; ",
                 "request.url = bpp.shopify.store_url + '/admin/api/' + d.getFullYear() + '-' + ('00'+m).slice(-2) + '/graphql.json'"
             ],
@@ -101,6 +101,8 @@
         {
             "name" : "createFulfillment",
             "request_finalizer"  : [
+                "var Util = Java.type('in.humbhionline.certbot.exports.Util');",
+                "Util.sleep(6000)",
                 "var d = new Date(); m = 3 * Math.floor(d.getMonth()/3) + 1 ; ",
                 "fulfillmentOrderId  = getFulfillmentOrderId.response.data.data.order.fulfillmentOrders.edges[0].node.id",
                 "ifulfillmentOrderId = fulfillmentOrderId.substr(fulfillmentOrderId.lastIndexOf('/')+1)",
@@ -138,6 +140,10 @@
         },
         {
             "name": "updateDelivered",
+            "request_finalizer" : [
+                "var Util = Java.type('in.humbhionline.certbot.exports.Util');",
+                "Util.sleep(10000);// Need to do this to ensure that pending pick hook gets right status"
+            ],
             "request" : {
                 "method" : "post",
                 "url":"${updateInvoiceUrl.request.url}",
@@ -163,7 +169,12 @@
                     "eval": "updateDelivered.response.status === 200 "
                 }
             }
+        },
+        {
+            "name" : "extract_logs",
+            "flow" : "./src/test/resources/preprod-wiggles.humbhionline.in/extract_logs.json"
         }
+
     ]
 
 }

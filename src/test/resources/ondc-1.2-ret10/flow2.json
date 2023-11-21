@@ -65,6 +65,10 @@
                     "name": "on_search_full_catalog_refresh.log",
                     "value": "${JSON.stringify(search.response.data[0])}"
                 }
+            ],
+            "logs_finalizer" : [
+                "on_search_full_catalog_refresh.search.response.data[0].context.message_id = on_search_full_catalog_refresh.search.request.body.context.message_id", 
+                "on_search_full_catalog_refresh.search.response.data[0].context.transaction_id = on_search_full_catalog_refresh.search.request.body.context.transaction_id"
             ]
         },
         {
@@ -83,6 +87,7 @@
                 "body": {
                     "context": {
                         "bpp_id": "${context.bpp_id}",
+                        "bpp_uri": "${context.bpp_uri}",
                         "city": "${context.city}",
                         "core_version": "${context.core_version}",
                         "country": "${context.country}",
@@ -147,13 +152,14 @@
                                     "request.body.message.order.fulfillments[0].id = select.response.data.message.order.fulfillments[0].id;",
 
                                     "items = JSON.parse(JSON.stringify(select.response.data.message.order.items)); ",
-                                    "items.forEach(function(i){ newi = {} ; newi.id = i.id , newi.location_id = i.location_id ; newi.quantity = {}; newi.quantity.count = 1  ;request.body.message.order.items.push(newi)});",
+                                    "items.forEach(function(i){ newi = {} ; newi.id = i.id ; newi.fulfillment_id = i.fulfillment_id; newi.location_id = i.location_id ; newi.quantity = {}; newi.quantity.count = 1  ;request.body.message.order.items.push(newi)});",
                                     "request.body.message.order.provider = bpp.provider;"
                                     ],
             "request": {
                 "body": {
                     "context": {
                         "bpp_id": "${context.bpp_id}",
+                        "bpp_uri": "${context.bpp_uri}",
                         "city": "${context.city}",
                         "core_version": "${context.core_version}",
                         "country": "${context.country}",
@@ -209,6 +215,7 @@
                                     "request.body.message.order.id = init.request.body.context.transaction_id",
                                     "request.body.message.order.fulfillments = init.request.body.message.order.fulfillments;",
                                     "request.body.message.order.fulfillments[0].end.person = bpp.fulfillment.end.person",
+                                    "request.body.message.order.fulfillments[0].tracking  = init.response.data.order.fulfillments[0].tracking",
 
                                     "request.body.message.order.updated_at = env.now",
                                     "request.body.message.order.billing= init.request.body.message.order.billing;",
@@ -233,6 +240,7 @@
                 "body": {
                     "context": {
                         "bpp_id": "${context.bpp_id}",
+                        "bpp_uri": "${context.bpp_uri}",
                         "city": "${context.city}",
                         "core_version": "${context.core_version}",
                         "country": "${context.country}",

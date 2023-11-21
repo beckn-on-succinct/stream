@@ -3,7 +3,6 @@ package in.humbhionline.certbot;
 import com.venky.core.util.ObjectUtil;
 import in.humbhionline.certbot.Step.Log;
 import in.humbhionline.certbot.Step.Logs;
-import org.json.simple.JSONObject;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -82,7 +81,7 @@ public class Logger {
         }
         logDirectory = new File(dir);
         if (logDirectory.exists()){
-            throw new RuntimeException("Directory/File already exists");
+            Logger.getInstance().log("Warning : Directory/File already exists");
         }else {
             logDirectory.mkdirs();
         }

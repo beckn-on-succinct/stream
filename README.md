@@ -22,8 +22,8 @@ bin/certbot.sh -g config.json -t test1.json -t test2.json ...
     * cd common ;
     * mvn clean install 
 2. Installing Stream
-    * git clone git@github.com:beckn-on-succinct/certbot.git 
-    * cd certbot ;
+    * git clone git@github.com:beckn-on-succinct/stream.git 
+    * cd stream ;
     * mvn clean compile;
 
 ## Creating a flow json file.
