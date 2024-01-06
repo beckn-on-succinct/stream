@@ -1,18 +1,31 @@
 package in.humbhionline.certbot;
 
+import com.venky.core.string.StringUtil;
 import in.succinct.json.JSONObjectWrapper;
 import org.json.simple.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 
 
 public class TestCase extends JSONObjectWrapper {
-    public TestCase(JSONObject value) {
+    private TestCase(JSONObject value) {
         super(value);
     }
 
-    public TestCase(String payload) {
+    private TestCase(String payload) {
         super(payload);
     }
+    private File file ;
+    public TestCase(File file) throws FileNotFoundException {
+        this(StringUtil.read(new FileReader(file), true));
+        this.file = file;
+    }
+    public String getDirectory(){
+        return file.getParent();
+    }
+
 
     public String getName(){
         return get("name");
@@ -36,8 +49,10 @@ public class TestCase extends JSONObjectWrapper {
         set("steps",steps);
     }
 
-
     public void execute(){
+        execute(false);
+    }
+    public void execute(boolean throwOnException){
         try {
             Logger.getInstance().log(String.format("Test Case : %s Started", getName()));
             for (Step step : getSteps()) {
@@ -54,6 +69,9 @@ public class TestCase extends JSONObjectWrapper {
             Logger.getInstance().log(String.format("Test Case : %s Passed", getName()));
         }catch (Exception ex) {
             Logger.getInstance().log(String.format("Test Case : %s Failed", getName()));
+            if (throwOnException) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 

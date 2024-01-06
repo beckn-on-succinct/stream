@@ -5,6 +5,9 @@ import in.succinct.json.JSONObjectWrapper;
 import org.json.simple.JSONObject;
 
 public class Variables extends JSONObjectWrapper {
+    public Variables(){
+        super();
+    }
 
     public Variables(JSONObject value) {
         super(value);

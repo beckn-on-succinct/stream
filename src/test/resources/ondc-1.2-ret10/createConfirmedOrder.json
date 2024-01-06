@@ -1,5 +1,5 @@
 {
-    "name": "flow2",
+    "name": "createConfirmedOrder",
     "steps": [
         {
             "name": "search",
@@ -69,8 +69,11 @@
                                     "request.body.context.message_id = message_id ;",
                                     "request.body.context.transaction_id = transaction_id; ",
                                     "items = JSON.parse(JSON.stringify(search.response.data[0].message.catalog['bpp/providers'].filter(function(p){ return p.time.label === 'enable'})[0].items)); ",
+                                    "items = items.filter(function(i){ ",
+                                    "   return i.descriptor.code.indexOf('Lamb') >= 0 || i.descriptor.code.indexOf('Hemp') >= 0 || i.descriptor.code.indexOf('Berry') >= 0 ;",
+                                    "}); ",
+
                                     "items.forEach(function(i){ newi = {} ; newi.id = i.id , newi.location_id = i.location_id ; newi.quantity = {}; newi.quantity.count = 1  ;request.body.message.order.items.push(newi)})",
-                                    "request.body.message.order.items = request.body.message.order.items.slice(0,2) ;",
                                     "request.body.message.order.provider = bpp.provider;"
                                     ],
             "request": {
@@ -138,7 +141,7 @@
                                     "request.body.message.order.billing.updated_at = env.now;",
                                     "request.body.message.order.fulfillments = [];",
                                     "request.body.message.order.fulfillments.push(JSON.parse(JSON.stringify(bpp.fulfillment)));",
-                                    "delete request.body.message.order.fulfillments[0].end.person",
+                                    "//delete request.body.message.order.fulfillments[0].end.person",
                                     "request.body.message.order.fulfillments[0].id = select.response.data.message.order.fulfillments[0].id;",
 
                                     "items = JSON.parse(JSON.stringify(select.response.data.message.order.items)); ",
@@ -196,7 +199,9 @@
         },
         {
             "name": "confirm",
-            "request_finalizer": [  "var UUID = Java.type('java.util.UUID') ;",
+            "request_finalizer" : [ "var Util = Java.type('in.humbhionline.certbot.exports.Util');",
+                                    "var UUID = Java.type('java.util.UUID') ;",
+                                    "//Util.sleep(40000);",
                                     "var message_id = UUID.randomUUID().toString();",
                                     "var payment_transaction_id = UUID.randomUUID().toString();",
                                     "request.body.context.message_id = message_id ;",
@@ -272,18 +277,6 @@
                     "value": "${JSON.stringify(confirm.response.data)}"
                 }
             ]
-        },
-        {
-            "name" : "status_updates",
-            "flow" : "${bpp.flow.status_updates}"
         }
-        ,{
-            "name" : "extract_logs",
-            "flow" : "../${context.bpp_id}/extract_logs.json"
-            "params" : {
-                "sleep" : "5000" 
-            }
-        }
-
     ]
 }

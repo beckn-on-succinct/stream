@@ -12,6 +12,7 @@ import org.json.simple.JSONAware;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.InputStream;
 import java.net.URI;
@@ -55,18 +56,30 @@ public class Step extends JSONObjectWrapper {
         TestRunner.loadEnv(testCase.getVariables());
         if (flow != null) {
             finalizeAttribute("flow",testCase);
-            executeSubFlow(testCase,getFlow());
+            finalizeAttribute( "params",testCase);
+            executeSubFlow(testCase,getFlow(), getParams());
         }else {
             executeRequest(testCase);
         }
     }
+    public Variables getParams(){
+        return get(Variables.class, "params");
+    }
+    public void setParams(Variables variables){
+        set("params",variables);
+    }
 
-    private void executeSubFlow(TestCase testCase,String subFlowName) {
+    private void executeSubFlow(TestCase testCase,String subFlowName, Variables params) {
         try {
-            TestCase subFlow = new TestCase(StringUtil.read(new FileReader(subFlowName)));
+            testCase.getVariables().set(getName(),getExportedVariables()); //Similar to exported Variables.
+
+            if (!subFlowName.startsWith("/")){
+                subFlowName= testCase.getDirectory() + "/" + subFlowName;
+            }
+            TestCase subFlow = new TestCase(new File(subFlowName));
             Variables state = new Variables(testCase.getVariables().getInner());
             subFlow.setVariables(state);
-            subFlow.execute();
+            subFlow.execute(true);
         }catch (Exception ex){
             throw new RuntimeException(ex);
         }
@@ -146,6 +159,10 @@ public class Step extends JSONObjectWrapper {
                 r.set(otherAttribute, new JSONObject());
 
                 setResponse(r);
+            }
+            if (r != null){
+                finalizeAttribute("response",testCase);
+                r = getResponse();
             }
 
 
@@ -255,8 +272,15 @@ public class Step extends JSONObjectWrapper {
     @SuppressWarnings("ALL")
     public JSONObject getExportedVariables(){
         JSONObject exported = new JSONObject();
-        exported.put("response",getResponse().getInner());
-        exported.put("request",getRequest().getInner());
+        if (getResponse() != null) {
+            exported.put("response", getResponse().getInner());
+        }
+        if (getRequest() != null) {
+            exported.put("request", getRequest().getInner());
+        }
+        if (getParams() != null ){
+            exported.put("params", getParams().getInner());
+        }
         return exported;
     }
 

@@ -1,0 +1,32 @@
+{
+    "name": "getEcommerceOrderId",
+    "steps" : [
+        {
+            "name": "getEcommerceOrderId",
+            "request_finalizer" : [ 
+                                    "var Util = Java.type('in.humbhionline.certbot.exports.Util');",
+                                    "Util.sleep(getEcommerceOrderId.params != null && getEcommerceOrderId.params.sleep ? getEcommerceOrderId.params.sleep : 15000)",
+                                    "imf = {\"BecknOrderMeta\":[\"ECommerceOrderId\",\"OrderJson\"] }",
+                                     "request.headers.IncludedModelFields = Util.btoa(JSON.stringify(imf))"],
+            "request" : {
+                "url" : "https://preprod-wiggles.humbhionline.in/beckn_order_metas/search?q=BECKN_TRANSACTION_ID%3A%22${confirm.request.body.context.transaction_id}%22+AND+SUBSCRIBER_ID%3A%22${context.bpp_id}%22",
+                "method" : "get",
+                "headers": {
+                    "Content-type": "application/json" ,
+                    "X-ApiKey" : "${bpp.x_api_key}"
+                }
+            },
+            "assertion" : {
+                "script": {
+                    "eval": "getEcommerceOrderId.response.status == 200"
+                }
+            },
+            "logs": [
+                {
+                    "name": "beckn_order_meta.log",
+                    "value": "${JSON.stringify(getEcommerceOrderId.response)}"
+                }
+            ]
+        }
+    ]
+}

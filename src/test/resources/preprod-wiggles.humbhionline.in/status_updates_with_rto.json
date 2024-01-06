@@ -1,5 +1,5 @@
 {
-    "name": "status_updates",
+    "name": "status_updates_with_rto",
     "steps" : [
         {
             "name": "getEcommerceOrderId",
@@ -14,8 +14,15 @@
             "flow" : "./pick_up_updates.json"
         },
         {
-            "name" : "delivery_updates" ,
-            "flow" : "./delivery_updates.json"
+            "name" : "merchant_cancel_flow" ,
+            "flow" : "./merchant_cancel.json",
+            "params" : {
+                "reason" : "declined"
+            }
+        },
+        {
+            "name" : "extract_logs",
+            "flow" : "./extract_logs.json"
         }
 
     ]

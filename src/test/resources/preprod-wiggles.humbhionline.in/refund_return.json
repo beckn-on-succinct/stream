@@ -1,0 +1,130 @@
+{
+    "name": "refund_return",
+    "steps" : [
+        {
+            "name": "getEcommerceOrderId",
+            "flow" : "./getEcommerceOrderId.json",
+            "params" : {
+                "sleep" : "8000"
+            }
+        },
+        {
+            "name" : "getOrder",
+            "request_finalizer"  : [
+                "var Util = Java.type('in.humbhionline.certbot.exports.Util');",
+                "//Util.sleep(10000)",
+                "var d = new Date(); m = 3 * Math.floor(d.getMonth()/3) + 1 ; ",
+                "order_id = getEcommerceOrderId.response.data.BecknOrderMetas[0].ECommerceOrderId ; ",
+                "request.url = bpp.shopify.store_url + '/admin/api/' + d.getFullYear() + '-' + ('00'+m).slice(-2) + '/orders/' + order_id +'/transactions.json'"
+            ],
+            "request": {
+                "headers": {
+                    "Content-Type" : "application/json",
+                    "X-Shopify-Access-Token" : "${bpp.shopify.access_token}"
+                },
+                "method" :"get"
+            },
+            "assertion": {
+                "script": {
+                    "eval": "getOrder.response.status  >= 200 &&  getOrder.response.status < 300  "
+                }
+            },
+            "logs": [
+                {
+                    "name": "getOrder.log",
+                    "value": "${JSON.stringify(getOrder)}"
+                }
+            ]
+
+        },
+        {
+            "name" : "approve_return",
+            "request_finalizer"  : [
+                "var Util = Java.type('in.humbhionline.certbot.exports.Util');",
+                "//Util.sleep(10000)",
+                "var d = new Date(); m = 3 * Math.floor(d.getMonth()/3) + 1 ; ",
+                "order_id = getEcommerceOrderId.response.data.BecknOrderMetas[0].ECommerceOrderId ; ",
+                "returns = JSON.parse(getEcommerceOrderId.response.data.BecknOrderMetas[0].OrderJson).extended_attributes.returns.filter(function(r){",
+                "   return r.return_status == 'REQUESTED' ",
+                "})",
+                "request.url = bpp.shopify.store_url + '/admin/api/' + d.getFullYear() + '-' + ('00'+m).slice(-2) + '/graphql.json'",
+                "request.body.variables.input.id = returns[0].id"
+            ],
+            "request": {
+                "headers": {
+                    "Content-Type" : "application/json",
+                    "X-Shopify-Access-Token" : "${bpp.shopify.access_token}"
+                },
+                "body" : {
+                    "query" : "mutation ReturnApproveRequest($input: ReturnApproveRequestInput!) { returnApproveRequest(input: $input) { return { id name status returnLineItems(first: 2) { edges { node { id  quantity refundableQuantity fulfillmentLineItem { lineItem { id variant {id}  discountedUnitPriceSet { shopMoney { currencyCode amount } } quantity }  } } } } order { id } } userErrors { code field message } } }",
+                    "variables" : {
+                        "input" : { 
+                            "id" : ""
+                        }
+                    }
+
+                },
+                "method" :"post"
+            },
+            "assertion": {
+                "script": {
+                    "eval": "approve_return.response.status  >= 200 &&  approve_return.response.status < 300  "
+                }
+            },
+            "logs": [
+                {
+                    "name": "approve_return.log",
+                    "value": "${JSON.stringify(approve_return)}"
+                }
+            ]
+
+        },
+        {
+            "name" : "return_refund",
+            "request_finalizer"  : [
+                "var Util = Java.type('in.humbhionline.certbot.exports.Util');",
+                "//Util.sleep(10000)",
+                "var d = new Date(); m = 3 * Math.floor(d.getMonth()/3) + 1 ; ",
+                "request.url = bpp.shopify.store_url + '/admin/api/' + d.getFullYear() + '-' + ('00'+m).slice(-2) + '/graphql.json'",
+                "orderTransactions = getOrder.response.data.transactions.filter(function(t){",
+                "   return t.kind == 'capture'",
+                "})",
+                " var returnLineItem = approve_return.response.data.data.returnApproveRequest.return.returnLineItems.edges[0].node",
+                "request.body.variables.returnRefundInput.orderTransactions.push({'parentId':orderTransactions[0].admin_graphql_api_id, 'transactionAmount' : {'currencyCode' : 'INR' , 'amount' : returnLineItem.refundableQuantity * returnLineItem.fulfillmentLineItem.lineItem.discountedUnitPriceSet.shopMoney.amount } })",
+                "request.body.variables.returnRefundInput.returnRefundLineItems.push({ 'quantity' : returnLineItem.quantity, 'returnLineItemId' : returnLineItem.id })"
+            ],
+            "request": {
+                "headers": {
+                    "Content-Type" : "application/json",
+                    "X-Shopify-Access-Token" : "${bpp.shopify.access_token}"
+                },
+                "method" :"post",
+                "body" : {
+                    "query" : "mutation returnRefund($returnRefundInput: ReturnRefundInput!) { returnRefund(returnRefundInput: $returnRefundInput) { refund { id } userErrors { field message } } }",
+                    "variables" : {
+                        "returnRefundInput" : { 
+                            "notifyCustomer" : false,
+                            "orderTransactions" : [],
+                            "returnId" : "${approve_return.response.data.data.returnApproveRequest.return.id}",  
+                            "returnRefundLineItems" : [] ,
+                            "refundShipping" : {"fullRefund" : false , "shippingRefundAmount" : {"currencyCode" : "INR" , "amount" :0 } }
+                        }
+                    }
+                }
+            },
+            "assertion": {
+                "script": {
+                    "eval": "return_refund.response.status  >= 200 &&  return_refund.response.status < 300  "
+                }
+            },
+            "logs": [
+                {
+                    "name": "return_refund.log",
+                    "value": "${JSON.stringify(return_refund)}"
+                }
+            ]
+
+        }
+    ]
+
+}

@@ -1,5 +1,5 @@
 {
-    "name": "flow2",
+    "name": "flow7",
     "steps": [
         {
             "name": "search",
@@ -69,8 +69,11 @@
                                     "request.body.context.message_id = message_id ;",
                                     "request.body.context.transaction_id = transaction_id; ",
                                     "items = JSON.parse(JSON.stringify(search.response.data[0].message.catalog['bpp/providers'].filter(function(p){ return p.time.label === 'enable'})[0].items)); ",
+                                    "items = items.filter(function(i){ ",
+                                    "   return i.descriptor.code.indexOf('Lamb') >= 0 || i.descriptor.code.indexOf('Hemp') >= 0 || i.descriptor.code.indexOf('Berry') >= 0 ;",
+                                    "}); ",
+
                                     "items.forEach(function(i){ newi = {} ; newi.id = i.id , newi.location_id = i.location_id ; newi.quantity = {}; newi.quantity.count = 1  ;request.body.message.order.items.push(newi)})",
-                                    "request.body.message.order.items = request.body.message.order.items.slice(0,2) ;",
                                     "request.body.message.order.provider = bpp.provider;"
                                     ],
             "request": {
@@ -138,7 +141,7 @@
                                     "request.body.message.order.billing.updated_at = env.now;",
                                     "request.body.message.order.fulfillments = [];",
                                     "request.body.message.order.fulfillments.push(JSON.parse(JSON.stringify(bpp.fulfillment)));",
-                                    "delete request.body.message.order.fulfillments[0].end.person",
+                                    "//delete request.body.message.order.fulfillments[0].end.person",
                                     "request.body.message.order.fulfillments[0].id = select.response.data.message.order.fulfillments[0].id;",
 
                                     "items = JSON.parse(JSON.stringify(select.response.data.message.order.items)); ",
@@ -196,7 +199,9 @@
         },
         {
             "name": "confirm",
-            "request_finalizer": [  "var UUID = Java.type('java.util.UUID') ;",
+            "request_finalizer" : [ "var Util = Java.type('in.humbhionline.certbot.exports.Util');",
+                                    "var UUID = Java.type('java.util.UUID') ;",
+                                    "//Util.sleep(40000);",
                                     "var message_id = UUID.randomUUID().toString();",
                                     "var payment_transaction_id = UUID.randomUUID().toString();",
                                     "request.body.context.message_id = message_id ;",
@@ -274,16 +279,90 @@
             ]
         },
         {
-            "name" : "status_updates",
-            "flow" : "${bpp.flow.status_updates}"
-        }
-        ,{
+            "name": "update",
+            "request_finalizer" : [ "var Util = Java.type('in.humbhionline.certbot.exports.Util');",
+                                    "var UUID = Java.type('java.util.UUID') ;",
+                                    "//Util.sleep(10000);",
+                                    "var message_id = UUID.randomUUID().toString();",
+                                    "request.body.context.message_id = message_id ;",
+                                    "request.body.message.order.fulfillments[0].tags[0].list.push({'code':'id','value':message_id}) ;"
+                                    ],
+            "request": {
+                "body": {
+                    "context": {
+                        "transaction_id" : "${confirm.request.body.context.transaction_id}",
+                        "bpp_id": "${context.bpp_id}",
+                        "bpp_uri": "${context.bpp_uri}",
+                        "city": "${context.city}",
+                        "core_version": "${context.core_version}",
+                        "country": "${context.country}",
+                        "domain": "${context.domain}",
+                        "action": "update",
+                        "bap_id": "${context.bap_id}",
+                        "bap_uri": "${context.bap_uri}",
+                        "ttl": "${context.ttl}",
+                        "timestamp": "${env.now}"
+                    },
+                    "message": {
+                        "update_target" : "item",
+                        "order" : {
+                            "id" : "${confirm.request.body.message.order.id}",
+                            "fulfillments" : [ {
+                                "type" : "Cancel" ,
+                                "tags" : [
+                                    { 
+                                        "code" : "cancel_request" ,
+                                        "list" : [
+                                            {
+                                                "code" : "item_id",
+                                                "value" : "${confirm.request.body.message.order.items[0].id}"
+                                            },{
+                                                "code" : "item_quantity",
+                                                "value" : "${confirm.request.body.message.order.items[0].quantity.count}"
+                                            },{
+                                                "code" : "reason_id",
+                                                "value" : "003"
+                                            },{
+                                                "code" : "reason_desc",
+                                                "value" : "Available Lower @ amazon"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }]
+                        }
+                    }
+                },
+                "headers": {
+                    "Authorization": "${authorization.basic}",
+                    "Content-Type": "application/json",
+                    "X-CallBackToBeSynchronized": "Y"
+                },
+                "method": "post",
+                "timeout": 60,
+                "url": "${sync_bap_url}/update"
+            },
+            "assertion" : {
+                "script" : {"eval" :"update.response.status == 200" }
+            },
+            "logs": [
+                {
+                    "name": "update.log",
+                    "value": "${JSON.stringify(update.request.body)}"
+                },
+                {
+                    "name": "on_update.log",
+                    "value": "${JSON.stringify(update.response.data)}"
+                }
+            ]
+        },
+        {
             "name" : "extract_logs",
-            "flow" : "../${context.bpp_id}/extract_logs.json"
-            "params" : {
-                "sleep" : "5000" 
+            "flow" : "../${context.bpp_id}/extract_logs.json",
+            "params": {
+                "update" : "update",
+                "sleep"  : 2000 
             }
         }
-
     ]
 }

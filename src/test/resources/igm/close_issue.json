@@ -1,0 +1,71 @@
+{
+    "name" : "close_issue",
+    "steps" : [
+        {
+            "name": "close_issue",
+            "request_finalizer" : [ "var Util = Java.type('in.humbhionline.certbot.exports.Util');",
+                                    "Util.sleep(3000)",
+                                    "var UUID = Java.type('java.util.UUID') ;",
+                                    "var message_id = UUID.randomUUID().toString();",
+                                    "request.body.context.message_id = message_id ;",
+                                    "complainant_actions = JSON.parse(JSON.stringify(issue.request.body.message.issue.issue_actions.complainant_actions)) ;",
+                                    "var current_action = {'complainant_action' : 'CLOSE' , 'short_desc' : 'Complaint Closed', 'created_at' : env.now, 'updated_at' : env.now };",
+                                    "current_action.updated_by= complainant_actions[0].updated_by; ",
+                                    "complainant_actions.push(current_action);",
+                                    "request.body.message.issue.issue_actions.complainant_actions = complainant_actions ;",
+                                    "request.body.message.issue.rating = 'THUMBS-UP' "
+                                    ],
+            "request": {
+                "body": {
+                    "context": {
+                        "bpp_id": "${context.bpp_id}",
+                        "bpp_uri": "${context.bpp_uri}",
+                        "city": "${context.city}",
+                        "core_version": "${context.igm_version}",
+                        "country": "${context.country}",
+                        "domain": "${context.domain}",
+                        "action": "issue",
+                        "bap_id": "${context.bap_id}",
+                        "bap_uri": "${context.bap_uri}",
+                        "ttl": "${context.ttl}",
+                        "timestamp": "${env.now}",
+                        "transaction_id" : "${confirm.request.body.context.transaction_id}" 
+                    },
+                    "message": {
+                        "issue" : {
+                            "id" : "${issue.request.body.message.issue.id}",
+                            "status" : "CLOSED" ,
+                            "created_at" : "${issue.request.body.message.issue.created_at}",
+                            "updated_at" : "${env.now}",
+                            "issue_actions" : {
+
+                            }
+                        }
+                        
+                    }
+                },
+                "headers": {
+                    "Authorization": "${authorization.basic}",
+                    "Content-Type": "application/json",
+                    "X-CallBackToBeSynchronized": "Y"
+                },
+                "method": "post",
+                "timeout": 240,
+                "url": "${sync_bap_url}/issue"
+            },
+            "assertion" : {
+                "script" : {"eval" :"close_issue.response.status == 200" }
+            },
+            "logs": [
+                {
+                    "name": "close_issue.log",
+                    "value": "${JSON.stringify(close_issue.request.body)}"
+                },
+                {
+                    "name": "on_close_issue.log",
+                    "value": "${JSON.stringify(close_issue.response.data)}"
+                }
+            ]
+        }
+    ]
+}

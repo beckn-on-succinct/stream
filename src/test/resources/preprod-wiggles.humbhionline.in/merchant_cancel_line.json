@@ -1,0 +1,122 @@
+{
+    "name": "merchant_cancel_line",
+    "steps" : [
+        {
+            "name": "getEcommerceOrderId",
+            "flow" : "./getEcommerceOrderId.json"
+        },
+        {
+            "name" : "getOrder",
+            "request_finalizer"  : [
+                "var Util = Java.type('in.humbhionline.certbot.exports.Util');",
+                "//Util.sleep(10000)",
+                "var d = new Date(); m = 3 * Math.floor(d.getMonth()/3) + 1 ; ",
+                "order_id = getEcommerceOrderId.response.data.BecknOrderMetas[0].ECommerceOrderId ; ",
+                "request.url = bpp.shopify.store_url + '/admin/api/' + d.getFullYear() + '-' + ('00'+m).slice(-2) + '/orders/' + order_id +'.json?fields=line_items'"
+            ],
+            "request": {
+                "headers": {
+                    "Content-Type" : "application/json",
+                    "X-Shopify-Access-Token" : "${bpp.shopify.access_token}"
+                },
+                "method" :"get"
+            },
+            "assertion": {
+                "script": {
+                    "eval": "getOrder.response.status  >= 200 &&  getOrder.response.status < 300  "
+                }
+            },
+            "logs": [
+                {
+                    "name": "getOrder.log",
+                    "value": "${JSON.stringify(getOrder)}"
+                }
+            ]
+
+        },
+        {
+            "name" : "calculate_refunds",
+            "request_finalizer"  : [
+                "var Util = Java.type('in.humbhionline.certbot.exports.Util');",
+                "//Util.sleep(10000)",
+                "var d = new Date(); m = 3 * Math.floor(d.getMonth()/3) + 1 ; ",
+                "order_id = getEcommerceOrderId.response.data.BecknOrderMetas[0].ECommerceOrderId ; ",
+                "request.url = bpp.shopify.store_url + '/admin/api/' + d.getFullYear() + '-' + ('00'+m).slice(-2) + '/orders/' + order_id +'/refunds/calculate.json'",
+                "line_items = getOrder.response.data.order.line_items.filter(function(li){", 
+                "       return merchant_cancel_line_flow.params.item_id.contains(''+li.variant_id)",
+                "});",
+                "request.body.refund.refund_line_items[0].line_item_id = line_items[0].id"
+            ],
+            "request": {
+                "headers": {
+                    "Content-Type" : "application/json",
+                    "X-Shopify-Access-Token" : "${bpp.shopify.access_token}"
+                },
+                "method" :"post",
+                "body" : {
+                    "refund" : {
+                        "currency" : "INR",
+                        "notify" : "false",
+                        "note" : "Not Available" ,
+                        "refund_line_items" : [
+                            {
+                                "quantity" : 1,
+                                "restock_type" : "cancel"
+                            }
+                        ]
+                    }
+                }
+            },
+            "assertion": {
+                "script": {
+                    "eval": "calculate_refunds.response.status  >= 200 &&  calculate_refunds.response.status < 300  "
+                }
+            },
+            "logs": [
+                {
+                    "name": "calculate_refunds.log",
+                    "value": "${JSON.stringify(calculate_refunds)}"
+                }
+            ]
+
+        },
+        {
+            "name" : "refunds",
+            "request_finalizer"  : [
+                "var Util = Java.type('in.humbhionline.certbot.exports.Util');",
+                "//Util.sleep(10000)",
+                "var d = new Date(); m = 3 * Math.floor(d.getMonth()/3) + 1 ; ",
+                "order_id = getEcommerceOrderId.response.data.BecknOrderMetas[0].ECommerceOrderId ; ",
+                "request.url = bpp.shopify.store_url + '/admin/api/' + d.getFullYear() + '-' + ('00'+m).slice(-2) + '/orders/' + order_id +'/refunds.json'",
+                "refund = calculate_refunds.response.data.refund",
+                "refund.transactions.forEach(function(transaction){",
+                "    transaction.kind='refund'",
+                "})",
+                "request.body.refund = refund"
+            ],
+            "request": {
+                "headers": {
+                    "Content-Type" : "application/json",
+                    "X-Shopify-Access-Token" : "${bpp.shopify.access_token}"
+                },
+                "method" :"post",
+                "body" : {
+                }
+            },
+            "assertion": {
+                "script": {
+                    "eval": "refunds.response.status  >= 200 &&  refunds.response.status < 300  "
+                }
+            },
+            "logs": [
+                {
+                    "name": "refunds.log",
+                    "value": "${JSON.stringify(refunds)}"
+                }
+            ]
+
+        }
+
+    ]
+
+}

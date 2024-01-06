@@ -1,0 +1,37 @@
+{
+    "name": "resolve_issue_flow",
+    "steps" : [
+        {
+            "name": "resolve_issue",
+            "request" : {
+                "url" : "https://preprod-wiggles.humbhionline.in/issues/save",
+                "method" : "post",
+                "headers": {
+                    "Content-type": "application/json" ,
+                    "X-ApiKey" : "${bpp.x_api_key}"
+                },
+                "body" : { "Issue" : {
+                            "IssueId" : "${resolve_issue_flow.params.issue_id}",
+                            "Resolution" : { 
+                                "Resolution" : "Refund Approved" ,
+                                "Resolution Remarks" : "We have Approved the refund" ,
+                                "ResolutionStatus" : "RESOLVED" ,
+                                "ResolutionAction" : "REFUND" 
+                            },
+                            "RefundAmount" : "${resolve_issue_flow.params.refund_amount}"
+                        } }
+            },
+            "assertion" : {
+                "script": {
+                    "eval": "resolve_issue.response.status == 200"
+                }
+            },
+            "logs": [
+                {
+                    "name": "beckn_order_meta.log",
+                    "value": "${JSON.stringify(getEcommerceOrderId.response)}"
+                }
+            ]
+        }
+    ]
+}

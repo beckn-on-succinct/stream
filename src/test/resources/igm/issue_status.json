@@ -1,0 +1,57 @@
+{
+    "name": "issue_status",
+    "steps": [
+        {
+            "name": "issue_status",
+            "request_finalizer" : [ "var Util = Java.type('in.humbhionline.certbot.exports.Util');",
+                                    "var UUID = Java.type('java.util.UUID') ;",
+                                    "var message_id = UUID.randomUUID().toString();",
+                                    "request.body.context.message_id = message_id ;"
+                                    ],
+            "request": {
+                "body": {
+                    "context": {
+                        "bpp_id": "${context.bpp_id}",
+                        "bpp_uri": "${context.bpp_uri}",
+                        "city": "${context.city}",
+                        "core_version": "${context.igm_version}",
+                        "country": "${context.country}",
+                        "domain": "${context.domain}",
+                        "action": "issue_status",
+                        "bap_id": "${context.bap_id}",
+                        "bap_uri": "${context.bap_uri}",
+                        "ttl": "${context.ttl}",
+                        "timestamp": "${env.now}",
+                        "transaction_id" : "${confirm.request.body.context.transaction_id}" 
+                    },
+                    "message": {
+                        "issue" : {
+                            "id" : "${issue.request.body.message.issue.id}"
+                        }
+                    }
+                },
+                "headers": {
+                    "Authorization": "${authorization.basic}",
+                    "Content-Type": "application/json",
+                    "X-CallBackToBeSynchronized": "Y"
+                },
+                "method": "post",
+                "timeout": 240,
+                "url": "${sync_bap_url}/issue_status"
+            },
+            "assertion" : {
+                "script" : {"eval" :"issue_status.response.status == 200" }
+            },
+            "logs": [
+                {
+                    "name": "issue_status.log",
+                    "value": "${JSON.stringify(issue_status.request.body)}"
+                },
+                {
+                    "name": "on_issue_status.log",
+                    "value": "${JSON.stringify(issue_status.response.data)}"
+                }
+            ]
+        }
+    ]
+}

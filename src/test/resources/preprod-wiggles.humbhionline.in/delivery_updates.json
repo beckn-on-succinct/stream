@@ -1,0 +1,75 @@
+{
+    "name": "delivery_updates",
+    "steps" : [
+        {
+            "name": "getFulfillmentOrderId",
+            "request" : {
+                "url" : "${updateInvoiceUrl.request.url}",
+                "method" : "post",
+                "headers": {
+                    "Content-Type" : "application/json",
+                    "X-Shopify-Access-Token" : "${bpp.shopify.access_token}"
+                },
+                "body" : {
+                    "query" : "query { order(id: \"gid://shopify/Order/${getEcommerceOrderId.response.data.BecknOrderMetas[0].ECommerceOrderId}\") { id name fulfillmentOrders(first:10){ edges {node {id status}} } } }"
+                }
+
+            },
+            "assertion" : {
+                "script" : { "eval" :  "getFulfillmentOrderId.response.status == 200"}
+            },
+            "logs": [
+                {
+                    "name": "getFulfillmentOrderId.request.log",
+                    "value": "${JSON.stringify(getFulfillmentOrderId.request)}"
+                },
+                {
+                    "name": "getFulfillmentOrderId.response.log",
+                    "value": "${JSON.stringify(getFulfillmentOrderId.response)}"
+                }
+            ]
+        },
+        {
+            "name" : "createFulfillment",
+            "request_finalizer"  : [
+                "var Util = Java.type('in.humbhionline.certbot.exports.Util');",
+                "//Util.sleep(10000)",
+                "var d = new Date(); m = 3 * Math.floor(d.getMonth()/3) + 1 ; ",
+                "fulfillmentOrderId  = getFulfillmentOrderId.response.data.data.order.fulfillmentOrders.edges[0].node.id",
+                "ifulfillmentOrderId = fulfillmentOrderId.substr(fulfillmentOrderId.lastIndexOf('/')+1)",
+                "request.body.fulfillment.line_items_by_fulfillment_order.push({ \"fulfillment_order_id\":ifulfillmentOrderId})",
+                "request.url = bpp.shopify.store_url + '/admin/api/' + d.getFullYear() + '-' + ('00'+m).slice(-2) + '/fulfillments.json'"
+            ],
+            "request": {
+                "headers": {
+                    "Content-Type" : "application/json",
+                    "X-Shopify-Access-Token" : "${bpp.shopify.access_token}"
+                },
+                "method" :"post",
+                "body" : {
+                    "fulfillment" : {
+                        "line_items_by_fulfillment_order" : []
+                    }
+                }
+            },
+            "assertion": {
+                "script": {
+                    "eval": "createFulfillment.response.status === 201 "
+                }
+            },
+            "logs": [
+                {
+                    "name": "createFulfillment.request.log",
+                    "value": "${JSON.stringify(createFulfillment.request)}"
+                },
+                {
+                    "name": "createFulfillment.response.log",
+                    "value": "${JSON.stringify(createFulfillment.response)}"
+                }
+            ]
+
+        }
+
+    ]
+
+}

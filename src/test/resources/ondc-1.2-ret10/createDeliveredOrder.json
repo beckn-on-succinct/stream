@@ -1,0 +1,13 @@
+{
+    "name": "createDeliveredOrder",
+    "steps": [
+        {
+            "name" : "createConfirmedOrder_Flow",
+            "flow" : "createConfirmedOrder.json"
+        },
+        {
+            "name" : "status_updates",
+            "flow" : "${bpp.flow.status_updates}" 
+        }
+    ]
+}

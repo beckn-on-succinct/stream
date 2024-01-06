@@ -48,7 +48,7 @@ public class TestRunner {
         try {
 
             for (File t : tests){
-                TestCase testCase = new TestCase(StringUtil.read(new FileReader(t)));
+                TestCase testCase = new TestCase(t);
                 Variables variables = new Variables((JSONObject) JSONValue.parseWithException(initialVariables));
                 loadEnv(variables);
                 if (testCase.getVariables() != null){

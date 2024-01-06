@@ -1,0 +1,44 @@
+{
+    "name": "merchant_cancel",
+    "steps" : [
+        {
+            "name": "getEcommerceOrderId",
+            "flow" : "./getEcommerceOrderId.json"
+        },
+        {
+            "name" : "merchant_cancel",
+            "request_finalizer"  : [
+                "var Util = Java.type('in.humbhionline.certbot.exports.Util');",
+                "//Util.sleep(10000)",
+                "var d = new Date(); m = 3 * Math.floor(d.getMonth()/3) + 1 ; ",
+                "order_id = getEcommerceOrderId.response.data.BecknOrderMetas[0].ECommerceOrderId ; ",
+                "request.url = bpp.shopify.store_url + '/admin/api/' + d.getFullYear() + '-' + ('00'+m).slice(-2) + '/orders/' + order_id +'/cancel.json'"
+            ],
+            "request": {
+                "headers": {
+                    "Content-Type" : "application/json",
+                    "X-Shopify-Access-Token" : "${bpp.shopify.access_token}"
+                },
+                "method" :"post",
+                "body" : {
+                    "reason" : "${merchant_cancel_flow.params.reason}",
+                    "amount" : "${confirm.response.data.message.order.quote.price.value}"
+                }
+            },
+            "assertion": {
+                "script": {
+                    "eval": "merchant_cancel.response.status  >= 200 &&  merchant_cancel.response.status < 300  "
+                }
+            },
+            "logs": [
+                {
+                    "name": "merchant_cancel.log",
+                    "value": "${JSON.stringify(merchant_cancel)}"
+                }
+            ]
+
+        }
+
+    ]
+
+}

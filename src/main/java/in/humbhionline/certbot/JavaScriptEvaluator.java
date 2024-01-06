@@ -42,6 +42,7 @@ public class JavaScriptEvaluator {
 
 
     public Object eval(TestCase testCase, String statements){
+        String function = "function(){}";
         try {
             /*
             Bindings bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
@@ -58,7 +59,7 @@ public class JavaScriptEvaluator {
                     init.append(String.format("%s = %s ; \n", k, v));
                 }
             }
-            String function = "function evaluate() { \n" +
+            function = "function evaluate() { \n" +
                     init +
                     statements +
                     "\n}";
@@ -66,6 +67,10 @@ public class JavaScriptEvaluator {
             engine.eval(function);
             return ((Invocable)engine).invokeFunction("evaluate");
         }catch (Exception ex){
+            Logger.getInstance().log("Failed Calling Function\n--" );
+            Logger.getInstance().log(function);
+            Logger.getInstance().log("\n--" );
+
             throw new AssertionException(ex);
         }
     }

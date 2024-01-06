@@ -1,0 +1,159 @@
+{
+    "name": "igm_flow2",
+    "steps": [
+        {
+            "name" : "createConfirmedOrder_Flow",
+            "flow" : "../ondc-1.2-ret10/createConfirmedOrder.json"
+        },
+        {
+            "name" : "status_updates",
+            "flow" : "../${context.bpp_id}/status_updates.json" 
+        },
+        {
+            "name": "issue",
+            "request_finalizer" : [ "var Util = Java.type('in.humbhionline.certbot.exports.Util');",
+                                    "var UUID = Java.type('java.util.UUID') ;",
+                                    "//Util.sleep(40000);",
+                                    "var message_id = UUID.randomUUID().toString();",
+                                    "var issue_id = UUID.randomUUID().toString();",
+                                    "request.body.context.message_id = message_id ;",
+                                    "request.body.message.issue.id = issue_id"
+                                    ],
+            "request": {
+                "body": {
+                    "context": {
+                        "bpp_id": "${context.bpp_id}",
+                        "bpp_uri": "${context.bpp_uri}",
+                        "city": "${context.city}",
+                        "core_version": "${context.igm_version}",
+                        "country": "${context.country}",
+                        "domain": "${context.domain}",
+                        "action": "issue",
+                        "bap_id": "${context.bap_id}",
+                        "bap_uri": "${context.bap_uri}",
+                        "ttl": "${context.ttl}",
+                        "timestamp": "${env.now}",
+                        "transaction_id" : "${confirm.request.body.context.transaction_id}" 
+                    },
+                    "message": {
+                        "issue" : {
+                            "issue_type": "ISSUE" ,
+                            "category" : "FULFILLMENT", 
+                            "sub_category" : "FLM02",
+                            "complainant_info" : {
+                                "person" : {
+                                    "name" : "${bpp.fulfillment.end.person.name}"
+                                },
+                                "contact" :{
+                                    "phone" : "${bpp.fulfillment.end.contact.phone}",
+                                    "email" : "${bpp.fulfillment.end.contact.email}"
+                                }
+                            },
+                            "order_details" : {
+                                "id" : "${confirm.response.data.message.order.id}",
+                                "state" : "Completed",
+                                "items" : [
+                                    {
+                                        "id" : "${confirm.response.data.message.order.items[0].id}", 
+                                        "quantity" : 1
+                                    },
+                                    {
+                                        "id" : "${confirm.response.data.message.order.items[1].id}", 
+                                        "quantity" : 1
+                                    },
+                                    {
+                                        "id" : "${confirm.response.data.message.order.items[2].id}", 
+                                        "quantity" : 1
+                                    }
+                                ],
+                                "fulfillments" :[
+                                    {
+                                        "id" : "${confirm.response.data.message.order.fulfillments[0].id}",
+                                        "state" : "${confirm.response.data.message.order.fulfillments[0].state}"
+                                    }
+                                ],
+                                "provider_id": "${confirm.response.data.message.order.provider.id}"
+                            },
+                            "description" : {
+                                "short_desc" : "Was not delivered.", 
+                                "long_desc" : "Was not delivered."
+                            },
+                            "source" : {
+                                "network_participant_id" : "${confirm.response.data.context.bap_id}",
+                                "type" : "CONSUMER"
+                            },
+                            "expected_response_time": {
+                                "duration": "PT2H"
+                            },
+                            "expected_resolution_time": {
+                                "duration": "P1D"
+                            },
+                            "status" : "OPEN" ,
+                            "issue_actions" : {
+                                "complainant_actions" : [
+                                    {
+                                        "complainant_action" : "OPEN" ,
+                                        "short_desc" : "Complaint Created",
+                                        "updated_at" : "${env.now}",
+                                        "updated_by" : {
+                                            "org" : {
+                                                "name" : "${confirm.response.data.context.bap_id}::${confirm.response.data.context.domain}" 
+                                            },
+                                            "contact" :{
+                                                "phone" : "${bpp.fulfillment.end.contact.phone}",
+                                                "email" : "${bpp.fulfillment.end.contact.email}"
+                                            },
+                                            "person" : {
+                                                "name" : "${bpp.fulfillment.end.person.name}"
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "created_at" : "${env.now}",
+                            "updated_at" : "${env.now}"
+                        }
+                        
+                    }
+                },
+                "headers": {
+                    "Authorization": "${authorization.basic}",
+                    "Content-Type": "application/json",
+                    "X-CallBackToBeSynchronized": "Y"
+                },
+                "method": "post",
+                "timeout": 240,
+                "url": "${sync_bap_url}/issue"
+            },
+            "assertion" : {
+                "script" : {"eval" :"issue.response.status == 200" }
+            },
+            "logs": [
+                {
+                    "name": "issue.log",
+                    "value": "${JSON.stringify(issue.request.body)}"
+                },
+                {
+                    "name": "on_issue.log",
+                    "value": "${JSON.stringify(issue.response.data)}"
+                }
+            ]
+        },
+        {
+            "name" : "issue_status",
+            "flow" : "./issue_status.json"
+        },
+        {
+            "name" : "resolve_issue_flow",
+            "flow" : "../${context.bpp_id}/resolve_issue.json",
+            "params_finalizer" : "params.refund_amount = confirm.response.data.message.order.quote.price.value; " ,
+            "params" : {
+                "issue_id" : "${issue.request.body.message.issue.id}"
+            }
+        },
+        {
+            "name" : "close_issue",
+            "flow" : "./close_issue.json"
+        }
+    ]
+}

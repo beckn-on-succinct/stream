@@ -1,0 +1,37 @@
+{
+    "name": "pick_up_updates",
+    "steps" : [
+        {
+            "name": "pick_up_updates",
+            "request_finalizer" : [
+                "var Util = Java.type('in.humbhionline.certbot.exports.Util');",
+                "//Util.sleep(10000);"
+            ],
+            "request" : {
+                "method" : "post",
+                "url":"${updateInvoiceUrl.request.url}",
+                "headers": {
+                    "Content-Type" : "application/json",
+                    "X-Shopify-Access-Token" : "${bpp.shopify.access_token}"
+                },
+                "body" : {
+                    "query": "mutation MetafieldsSet($metafields: [MetafieldsSetInput!]!) { metafieldsSet(metafields: $metafields) { metafields { key namespace value createdAt updatedAt } userErrors { field message code } } }",
+                    "variables" : {
+                        "metafields" : [{
+                            "key" : "picked_up",
+                            "namespace" : "ondc",
+                            "ownerId": "gid://shopify/Order/${getEcommerceOrderId.response.data.BecknOrderMetas[0].ECommerceOrderId}",
+                            "type": "boolean",
+                            "value":"true"
+                        }]
+                    }
+                }
+            },
+            "assertion": {
+                "script": {
+                    "eval": "pick_up_updates.response.status === 200 "
+                }
+            }
+        }
+    ]
+}

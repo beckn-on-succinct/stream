@@ -6,31 +6,42 @@
             "request" : {
                 "method" : "get",
                 "url":"https://${context.bpp_id}/messages/search?q=TRANSACTION_ID%3A%22${confirm.request.body.context.transaction_id}%22+AND+APPLICATION_NETWORK_ID%3A56",
+                "timeout" : 60 ,
                 "headers": {
                     "Content-Type" : "application/json",
                     "X-ApiKey" : "${bpp.x_api_key}"
                 }
             },
             "request_finalizer" : ["var Util = Java.type('in.humbhionline.certbot.exports.Util');",
-                                    "Util.sleep(30000);",
+                                    "var time_to_sleep =  ( extract_logs.params.sleep == null  ? 20000 : extract_logs.params.sleep ); ", 
+                                    "Util.sleep(time_to_sleep);",
                                     "imf = {\"Message\":[\"Id\",\"MessageId\",\"Payload\",\"Direction\",\"CreatedAt\"] }",
                                      "request.headers.IncludedModelFields = Util.btoa(JSON.stringify(imf))"],
-            "logs": [],
-            "logs_finalizer" : [
-                "var r = extractlogs.response;",
+            "response_finalizer": [
+                "var r = response;",
+                "r.logs= {};",
                 "var messages = r.data.Messages.sort(function(m1,m2){ return m1.Id - m2.Id});",
                 "messages.forEach(function(m) { ",
                 "                   if (m.Direction.endsWith('Network')){ ",
                 "                       m.Payload = JSON.parse(m.Payload); ", 
                 "                       var name = m.Payload.context.action ;",
-                "                       if (m.Direction.startsWith('To')){ ",
+                "                       if (m.Direction.startsWith('To') && m.Payload.message.order != null){ ",
                 "                           name = name + '-' + m.Payload.message.order.state ;",
                 "                           name = name + (m.Payload.message.order.fulfillments[0].state ? '-' + m.Payload.message.order.fulfillments[0].state.descriptor.code : '-undefined' ); " , 
+                "                           name = (r.logs[name] ? name + '-' + m.Id : name )",
                 "                       }",
-                "                       logs.push({\"name\": name, \"value\": JSON.stringify(m.Payload)});",
-                "                       r[name] = m.Payload;",
+                "                       r.logs[name] = m.Payload;",
                 "                   }",
-                "})"
+                "});",
+                "r.logs['search'] = (search.request.body)",
+                "r.logs['on_search'] = (search.response.data[0])"
+            ],
+            "logs": [ ],
+            "logs_finalizer" : [
+                "var r = extractlogs.response;",
+                "Object.keys(r.logs).forEach(function(k) {",
+                "   logs.push({'name': k, 'value' : JSON.stringify(r.logs[k])}) ; ", 
+                "});"
             ]
 
         },
@@ -46,35 +57,54 @@
                 },
                 "method": "post",
                 "timeout": 60,
-                "url": "https://log-validation.ondc.org/api/validate"
+                "url": "${ondc.validator_url}"
             },
-            "request_finalizer": [ "request.body.payload = {\"search_full_catalog_refresh\" : search.request.body,",
+            "request_finalizer": [ "request.body.payload = {",
+                                                            "\"search_full_catalog_refresh\" : search.request.body,",
                                                             "\"on_search_full_catalog_refresh\"  : search.response.data[0],",
                                                             "\"select\"  : select.request.body,",
                                                             "\"on_select\"  : select.response.data,",
-                                                            "\"init\"  : init.request.body,",
-                                                            "\"on_init\"  : init.response.data,",
-                                                            "\"confirm\"  : confirm.request.body,",
+                                                            "\"init\"  :init.request.body,",
+                                                            "\"on_init\"  :init.response.data,",
+                                                            "\"confirm\"  :confirm.request.body,",
                                                             "\"on_confirm\"  : confirm.response.data,",
-                                                            "\"on_status_pending\"  : extractlogs.response['on_status-In-progress-Packed'],",
-                                                            "\"on_status_picked\"  : extractlogs.response['on_status-In-progress-Order-picked-up'],",
-                                                            "\"on_status_delivered\"  : extractlogs.response['on_status-Completed-Order-delivered'],",
-                                                            "}"],
+                                                            "}",
+                                   "if ( extract_logs.params.ret_issue != null ) {" ,
+                                        "request.body.payload.ret_issue = eval(extract_logs.params.ret_issue + '.request.body');" ,
+                                        "request.body.payload.on_ret_issue = eval(extract_logs.params.ret_issue +'.response.data');" ,
+                                   "}",
+                                   "if ( extract_logs.params.update != null ) {" ,
+                                        "request.body.payload.update = eval(extract_logs.params.update + '.request.body');" ,
+                                        "request.body.payload.on_update = eval(extract_logs.params.update +'.response.data');" ,
+                                   "}",
+                                   "if ( extractlogs.response.logs['on_status-In-progress-Order-picked-up'] != null ) {" ,
+                                        "request.body.payload.on_status_picked = extractlogs.response.logs['on_status-In-progress-Order-picked-up']" ,
+                                   "}",
+                                   "if ( extractlogs.response.logs['on_status-In-progress-Packed'] != null ) {" ,
+                                        "request.body.payload.on_status_pending = extractlogs.response.logs['on_status-In-progress-Packed']" ,
+                                   "}",
+
+                                   "if ( extractlogs.response.logs['on_status-Completed-Order-delivered'] != null ) {" ,
+                                        "request.body.payload.on_status_delivered = extractlogs.response.logs['on_status-Completed-Order-delivered']" ,
+                                   "}",
+                                   "if ( extractlogs.response.logs['on_status-Cancelled-Cancelled'] != null ) {" ,
+                                        "request.body.payload.on_status = extractlogs.response.logs['on_status-Cancelled-Cancelled']" ,
+                                   "}",
+                                   "if ( extractlogs.response.logs['on_cancel-Cancelled-Cancelled'] != null ) {" ,
+                                        "request.body.payload.on_cancel = extractlogs.response.logs['on_cancel-Cancelled-Cancelled']" ,
+                                   "}"
+                                   ],
             "assertion": {
                 "script": {
                     "eval": "ondc_validator.response.status == 200"
                 }
             },
-            "logs": [
-                {
-                    "name": "ondcvalidator.log",
-                    "value": "${JSON.stringify(ondc_validator.response)}"
-                },
-                {
-                    "name": "ondcvalidator_payload.json",
-                    "value": "${JSON.stringify(ondc_validator.request.body)}"
-                }
-            ]
+            "logs_finalizer" : [
+                "var logName = extract_logs.params.log == null ? 'ondcvalidator.log' : extract_logs.params.log;",
+                "logs.push({'name': logName, 'value' : JSON.stringify(ondc_validator.response.data)}) ; " ,
+                "logs.push({'name': 'payload_'+logName, 'value' : JSON.stringify(ondc_validator.request.body)}) ; " 
+            ],
+            "logs": [ ]
         }
     ]
 }
