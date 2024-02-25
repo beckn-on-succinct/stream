@@ -1,0 +1,249 @@
+{
+    "name": "createConfirmedOrder",
+    "steps": [
+        {
+            "name": "search",
+            "request_finalizer": [  "var UUID = Java.type('java.util.UUID') ;",
+                                    "var message_id = UUID.randomUUID().toString(); ",
+                                    "var transaction_id = UUID.randomUUID().toString() ; ",
+                                    "request.body.context.message_id = message_id ;",
+                                    "request.body.context.transaction_id = transaction_id ; ",
+                                    "request.body.message.intent.payment = bap.payment ; "],
+            "request": {
+                "body": {
+                    "context": {
+                        "bpp_id": "${context.bpp_id}",
+                        "city": "${context.city}",
+                        "core_version": "${context.core_version}",
+                        "country": "${context.country}",
+                        "domain": "${context.domain}",
+                        "action": "search",
+                        "bap_id": "${context.bap_id}",
+                        "bap_uri": "${context.bap_uri}",
+                        "ttl": "${context.ttl}",
+                        "timestamp": "${env.now}"
+                    },
+                    "message": {
+                        "intent": {
+                            "fulfillment": {
+                                "type": "HOME-DELIVERY"
+                            }
+                        }
+                    }
+                },
+                "headers": {
+                    "Authorization": "${authorization.basic}",
+                    "Content-Type": "application/json",
+                    "X-CallBackToBeSynchronized": "Y"
+                },
+                "method": "post",
+                "timeout": 60,
+                "url": "${sync_bap_url}/search"
+            },
+            "assertion": {
+                "script" : {"eval" :"search.response.status == 200" }
+            }
+        },
+        {
+            "name": "select",
+            "request_finalizer": [  "var UUID = Java.type('java.util.UUID') ;",
+                                    "var message_id = UUID.randomUUID().toString();",
+                                    "var transaction_id = UUID.randomUUID().toString() ;",
+                                    "request.body.context.message_id = message_id ;",
+                                    "request.body.context.transaction_id = transaction_id; ",
+                                    "items = JSON.parse(JSON.stringify(search.response.data[0].message.catalog['bpp/providers'][0].items)); ",
+                                    "items.forEach(function(i){ newi = {} ; newi.id = i.id , newi.location_id = i.location_id ; newi.quantity = {}; newi.quantity.count = 1  ;request.body.message.order.items.push(newi)})",
+                                    "request.body.message.order.provider = bpp.provider;"
+                                    ],
+            "request": {
+                "body": {
+                    "context": {
+                        "bpp_id": "${context.bpp_id}",
+                        "bpp_uri": "${context.bpp_uri}",
+                        "city": "${context.city}",
+                        "core_version": "${context.core_version}",
+                        "country": "${context.country}",
+                        "domain": "${context.domain}",
+                        "action": "select",
+                        "bap_id": "${context.bap_id}",
+                        "bap_uri": "${context.bap_uri}",
+                        "ttl": "${context.ttl}",
+                        "timestamp": "${env.now}"
+                    },
+                    "message": {
+                        "order" : {
+                            "fulfillments" : [{
+                                "end" :{
+                                    "location" : {
+                                        "address" : { 
+                                            "area_code" : "${bpp.fulfillment.end.location.address.area_code}" 
+                                        },
+                                        "gps" : "${bpp.fulfillment.end.location.gps}"
+                                    }
+                                }
+                            }],
+                            "items" : []
+                        }
+                    }
+                },
+                "headers": {
+                    "Authorization": "${authorization.basic}",
+                    "Content-Type": "application/json",
+                    "X-CallBackToBeSynchronized": "Y"
+                },
+                "method": "post",
+                "timeout": 60,
+                "url": "${sync_bap_url}/select"
+            },
+            "assertion" : {
+                "script" : {"eval" :"select.response.status == 200" }
+            },
+            "logs": [
+                {
+                    "name": "select.log",
+                    "value": "${JSON.stringify(select.request.body)}"
+                },
+                {
+                    "name": "on_select.log",
+                    "value": "${JSON.stringify(select.response.data)}"
+                }
+            ]
+        },
+        {
+            "name": "init",
+            "request_finalizer": [  "var UUID = Java.type('java.util.UUID') ;",
+                                    "var message_id = UUID.randomUUID().toString();",
+                                    "request.body.context.message_id = message_id ;",
+                                    "request.body.context.transaction_id = select.request.body.context.transaction_id; ",
+                                    "request.body.message.order.billing.address = bpp.fulfillment.end.location.address;",
+                                    "request.body.message.order.billing.created_at = env.now;",
+                                    "request.body.message.order.billing.updated_at = env.now;",
+                                    "request.body.message.order.fulfillments = [];",
+                                    "request.body.message.order.fulfillments.push(JSON.parse(JSON.stringify(bpp.fulfillment)));",
+                                    "//delete request.body.message.order.fulfillments[0].end.person",
+                                    "request.body.message.order.fulfillments[0].id = select.response.data.message.order.fulfillments[0].id;",
+
+                                    "items = JSON.parse(JSON.stringify(select.response.data.message.order.items)); ",
+                                    "items.forEach(function(i){ newi = {} ; newi.id = i.id ; newi.fulfillment_id = i.fulfillment_id; newi.location_id = i.location_id ; newi.quantity = {}; newi.quantity.count = 1  ;request.body.message.order.items.push(newi)});",
+                                    "request.body.message.order.provider = bpp.provider;"
+                                    ],
+            "request": {
+                "body": {
+                    "context": {
+                        "bpp_id": "${context.bpp_id}",
+                        "bpp_uri": "${context.bpp_uri}",
+                        "city": "${context.city}",
+                        "core_version": "${context.core_version}",
+                        "country": "${context.country}",
+                        "domain": "${context.domain}",
+                        "action": "init",
+                        "bap_id": "${context.bap_id}",
+                        "bap_uri": "${context.bap_uri}",
+                        "ttl": "${context.ttl}",
+                        "timestamp": "${env.now}"
+                    },
+                    "message": {
+                        "order" : {
+                            "billing": {
+                                "email" : "${bpp.fulfillment.end.contact.email}",
+                                "phone" : "${bpp.fulfillment.end.contact.phone}",
+                                "name" : "${bpp.fulfillment.end.location.address.name}"
+                            },
+                            "items" : []
+                        }
+                    }
+                },
+                "headers": {
+                    "Authorization": "${authorization.basic}",
+                    "Content-Type": "application/json",
+                    "X-CallBackToBeSynchronized": "Y"
+                },
+                "method": "post",
+                "timeout": 60,
+                "url": "${sync_bap_url}/init"
+            },
+            "assertion" : {
+                "script" : {"eval" :"init.response.status == 200" }
+            },
+            "logs": [
+                {
+                    "name": "init.log",
+                    "value": "${JSON.stringify(init.request.body)}"
+                },
+                {
+                    "name": "on_init.log",
+                    "value": "${JSON.stringify(init.response.data)}"
+                }
+            ]
+        },
+        {
+            "name": "confirm",
+            "request_finalizer" : [ "var Util = Java.type('in.humbhionline.certbot.exports.Util');",
+                                    "var UUID = Java.type('java.util.UUID') ;",
+                                    "//Util.sleep(40000);",
+                                    "var message_id = UUID.randomUUID().toString();",
+                                    "var payment_transaction_id = UUID.randomUUID().toString();",
+                                    "request.body.context.message_id = message_id ;",
+                                    "request.body.context.transaction_id = select.request.body.context.transaction_id; ",
+                                    "request.body.message.order.created_at = env.now",
+                                    "request.body.message.order.id = init.request.body.context.transaction_id",
+                                    "request.body.message.order.fulfillments = init.request.body.message.order.fulfillments;",
+                                    "request.body.message.order.fulfillments[0].end.person = bpp.fulfillment.end.person",
+                                    "request.body.message.order.fulfillments[0].tracking  = init.response.data.message.order.fulfillments[0].tracking",
+
+                                    "request.body.message.order.updated_at = env.now",
+                                    "request.body.message.order.billing= init.request.body.message.order.billing;",
+
+                                    "items = JSON.parse(JSON.stringify(init.response.data.message.order.items)); ",
+                                    "items.forEach(function(i){ newi = {} ; newi.id = i.id , newi.fulfillment_id = i.fulfillment_id ; newi.quantity = {}; newi.quantity.count = i.quantity.count  ;request.body.message.order.items.push(newi)});",
+                                    "payment = JSON.parse(JSON.stringify(init.response.data.message.order.payment));",
+                                    "request.body.message.order.provider = init.response.data.message.order.provider;",
+                                    "request.body.message.order.quote = init.response.data.message.order.quote;",
+                                    "request.body.message.order.state = \"Created\";"
+                                    ],
+            "request": {
+                "body": {
+                    "context": {
+                        "bpp_id": "${context.bpp_id}",
+                        "bpp_uri": "${context.bpp_uri}",
+                        "city": "${context.city}",
+                        "core_version": "${context.core_version}",
+                        "country": "${context.country}",
+                        "domain": "${context.domain}",
+                        "action": "confirm",
+                        "bap_id": "${context.bap_id}",
+                        "bap_uri": "${context.bap_uri}",
+                        "ttl": "${context.ttl}",
+                        "timestamp": "${env.now}"
+                    },
+                    "message": {
+                        "order" : {
+                            "items" : []
+                        }
+                    }
+                },
+                "headers": {
+                    "Authorization": "${authorization.basic}",
+                    "Content-Type": "application/json",
+                    "X-CallBackToBeSynchronized": "Y"
+                },
+                "method": "post",
+                "timeout": 60,
+                "url": "${sync_bap_url}/confirm"
+            },
+            "assertion" : {
+                "script" : {"eval" :"confirm.response.status == 200" }
+            },
+            "logs": [
+                {
+                    "name": "confirm.log",
+                    "value": "${JSON.stringify(confirm.request.body)}"
+                },
+                {
+                    "name": "on_confirm.log",
+                    "value": "${JSON.stringify(confirm.response.data)}"
+                }
+            ]
+        }
+    ]
+}
