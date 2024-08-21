@@ -1,0 +1,103 @@
+{
+    "name": "flow0",
+    "steps": [
+        {
+            "name": "select",
+            "request_finalizer": [  "var UUID = Java.type('java.util.UUID') ;",
+                                    "var message_id = UUID.randomUUID().toString();",
+                                    "var transaction_id = UUID.randomUUID().toString() ;",
+                                    "request.body.context.message_id = message_id ;",
+                                    "request.body.context.transaction_id = transaction_id ; "],
+            "request": {
+                "body": {
+                    "context": {
+                        "bpp_id": "${context.bpp_id}",
+                        "version": "${context.core_version}",
+                        "location": {
+                            "city": { "code" : "${context.city}" } ,
+                            "country": { "code" : "${context.country}" }
+                        },
+                        "domain": "${context.domain}",
+                        "action": "select",
+                        "bap_id": "${context.bap_id}",
+                        "bap_uri": "${context.bap_uri}",
+                        "ttl": "${context.ttl}",
+                        "timestamp": "${env.now}"
+                    },
+                    "message": {
+                        "order": {
+                          "provider": {
+                            "id": "6e970428-0d40-44fd-b763-34a8d834d242",
+                            "locations": [
+                              {
+                                "id": "L6e970428-0d40-44fd-b763-34a8d834d242"
+                              }
+                            ]
+                          },
+                          "items": [
+                            {
+                              "id": "1",
+                              "parent_item_id": "f4d44b69-9b28-4c3c-8956-1c223367dd3a",
+                              "location_ids": [
+                                "6e970428-0d40-44fd-b763-34a8d834d242"
+                              ],
+                              "quantity": {
+                                "selected": {
+                                  "count": 1
+                                }
+                              }
+                            }
+                          ],
+                          "fulfillments": [
+                            {
+                              "id": "1",
+                              "type": "Home-Service",
+                              "stops": [
+                                {
+                                  "type": "end",
+                                  "location": {
+                                    "gps": "12.974002,77.613458",
+                                    "area_code": "560001"
+                                  },
+                                  "time": {
+                                    "label": "selected",
+                                    "range": {
+                                      "start": "2024-08-14T11:30:45.423Z",
+                                      "end": "2024-08-14T11:30:45.423Z"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          ],
+                          "payments": [
+                            {
+                              "type": "PRE-FULFILLMENT"
+                            }
+                          ]
+                        }
+
+                    }
+                },
+                "headers": {
+                    "Authorization": "${authorization.basic}",
+                    "Content-Type": "application/json",
+                    "X-CallBackToBeSynchronized": "Y"
+                },
+                "method": "post",
+                "timeout": 120,
+                "url": "${sync_bap_url}/select"
+            },
+            "logs": [
+                {
+                    "name": "select.log",
+                    "value": "${JSON.stringify(select.request.body)}"
+                },
+                {
+                    "name": "on_select.log",
+                    "value": "${JSON.stringify(select.response.data[0])}"
+                }
+            ]
+        }
+    ]
+}
