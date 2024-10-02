@@ -29,11 +29,9 @@
                     },
                     "message": {
                         "intent": {
-                            "item": {
                                 "category" :{
                                    "id" : "SRV11-*" 
                                 }
-                            }
                         }
                     }
                 },
