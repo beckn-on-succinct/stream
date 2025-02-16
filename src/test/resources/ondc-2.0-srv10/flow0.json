@@ -7,6 +7,7 @@
                                     "var message_id = UUID.randomUUID().toString();",
                                     "var transaction_id = UUID.randomUUID().toString() ;",
                                     "request.body.context.message_id = message_id ;",
+                                    "context.city && (request.body.context.location.city = {'code' : context.city } );",
                                     "request.body.message.intent.fulfillment = bpp.fulfillment ;",
                                     "request.body.message.intent.payment = bap.payment ;",
                                     "request.body.message.intent.tags = bap.tags ;",
@@ -17,7 +18,6 @@
                         "bpp_id": "${context.bpp_id}",
                         "version": "${context.core_version}",
                         "location": {
-                            "city": { "code" : "${context.city}" } ,
                             "country": { "code" : "${context.country}" }
                         },
                         "domain": "${context.domain}",
