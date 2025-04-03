@@ -1,0 +1,55 @@
+{
+    "name": "flow0",
+    "steps": [
+        {
+            "name": "search",
+            "request_finalizer": [  "var UUID = Java.type('java.util.UUID') ;",
+                                    "var message_id = UUID.randomUUID().toString();",
+                                    "var transaction_id = UUID.randomUUID().toString() ;",
+                                    "request.body.context.message_id = message_id ;",
+                                    "context.city && (request.body.context.location.city = {'code' : context.city } );",
+                                    "request.body.message.intent.location = bap.location ;",
+                                    "request.body.message.intent.provider = bap.provider ;",
+                                    "request.body.context.transaction_id = transaction_id ; "],
+            "request": {
+                "body": {
+                    "context": {
+                        "version": "${context.core_version}",
+                        "location": {
+                            "country": { "code" : "${context.country}" }
+                        },
+                        "domain": "${context.domain}",
+                        "action": "search",
+                        "bpp_id": "${context.bpp_id}",
+                        "bap_id": "${context.bap_id}",
+                        "bap_uri": "${context.bap_uri}",
+                        "ttl": "${context.ttl}",
+                        "timestamp": "${env.now}"
+                    },
+                    "message": {
+                        "intent": {
+                        }
+                    }
+                },
+                "headers": {
+                    "Authorization": "${authorization.basic}",
+                    "Content-Type": "application/json",
+                    "X-CallBackToBeSynchronized": "Y"
+                },
+                "method": "post",
+                "timeout": 120,
+                "url": "${sync_bap_url}/search"
+            },
+            "logs": [
+                {
+                    "name": "search.log",
+                    "value": "${JSON.stringify(search.request.body)}"
+                },
+                {
+                    "name": "on_search.log",
+                    "value": "${JSON.stringify(search.response.data[0])}"
+                }
+            ]
+        }
+    ]
+}
